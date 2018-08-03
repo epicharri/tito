@@ -1,0 +1,27 @@
+; Tämä ohjelma suorittaa kertolaskun ilman MUL -käskyä, 
+;   käyttäen 4000 vuotta vanhaa egyptiläisten kertolaskualgoritmia.
+
+
+Main            in r1, =kbd     ; kertoja
+                in r2, =kbd     ; kerrottava
+                comp r1, r2     ; vertailu         
+                jngre Aloitus   ; jos r1 <= r2, hypätään aloitukseen
+                load r5, r1     ; r5 = r1
+                load r1, r2     ; r1 = r2
+                load r2, r5     ; r2 = r5 eli r2 on alkuperäinen r1. Nyt r1 < r2
+
+Aloitus         load r5, =0     ; r5:een kertolaskun tulos
+Luuppi          load r3, r1     ; r3:een r1:n arvo andausta varten
+                and r3, =1      ; Jos viimeinen bitti on 1, on tämän jälkeen
+                                ;   r3:n arvo 1, muutoin r3:n arvo on 0.
+
+                jzer r3, KertaaKaksi ; hyppää tulokseen lisäämisen yli
+                add r5, r2      ; Lisätään tulokseen r2:n arvo
+
+KertaaKaksi     shl r2, =1      ; kerrotaan r2 kahdella (siirtämällä bitit 1 vasemmalle)
+                shr r1, =1      ; kertojan bitit 1 oikealle 
+                jnzer r1, Luuppi  ; Jos kertoja ei ole 0, jatketaan Luuppia
+
+                out r5, =crt    ; tulostetaan kertolaskun tulos
+
+                svc sp, =halt   ; lopetetaan ohjelma
