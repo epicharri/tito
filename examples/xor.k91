@@ -1,0 +1,105 @@
+avain1 dc 1764088314            ; Maski: salausavain 01101001 00100101 11011001 11111010
+avain2 dc 1473066641            ; Maski: salausavain 01010111 11001101 00110110 10010001
+tavumask dc 255                 ; Maski: 00000000 00000000 00000000 11111111
+salasana ds 2                   ; Tietue salasanaa varten: 2 kpl 32-bittistä sanaa, johon mahtuu 8 asciimerkkiä
+
+        load r2, =0             ; Käytetään rekisteriä R2 indeksinä laskemaan montako lukua on annettu.
+        load r5, =1             ; Ladataan R5:een luku 1, jota käytetään myöhemmin viittaamaan tietueen toiseen alkioon.
+
+LUE     in r1, =kbd             ; Luetaan lukuja 0x21- 0x7e eli 33 - 126 näppäimistöltä
+                                ;   (ascii-koodattuja merkkejä, esimerkiksi 65 = A ja 97 = a)
+        comp r1, =126           ; Verrataan annettua lukua suurimpaan sallittuun
+        jgre LUE                ; Jos annettu luku on suurempi kuin 126, hypätään LUE
+        comp r1, =33            ; Verrataan annettua lukua pienimpään sallittuun
+        jles LUE                ; Jos annettu luku on pienempi kuin 33, hypätään LUE
+
+        load r3, r2             ; Kopioidaan indeksinä käytettävän rekisterin R2 arvo R3:een
+        div r3, =4              ; Jaetaan indeksi 4:llä. Koska DIV palauttaa vain kokonaisluvun,
+                                ;   on nyt R3:ssa 0, jos indeksi on välillä [0, 3] ja 1, jos indeksi on välillä [4, 7].
+                                
+        load r4, salasana(r3)   ; Kätevää, näin saadaan ilman ehtolauseita valittua kumpaa taulukon alkiota käytetään     
+               
+        shl r4, =8              ; Siirretään taulukon alkion bittejä 8 vasemmalle. Tämä tehdään, jotta lopulta
+                                ;   kun alkioon on tallennettu luetut luvut, on ensimmäisen luku ensimmäisenä vasemmalla
+                                ;   8 bittisenä, toinen luku toisena vasemmalta jne.
+                                
+        or r4, r1               ; Tällä saadaan luettu luku (joka on R1:ssä), asetettua R4:ssä olevan luvun 8 oikeanpuoleisen
+                                ;   bitin kohdalle. Luetun luvun 24 ensimmäistä bittiä on nollia, joten R4:ssä olevat
+                                ;   ensimmäiset 24 bittiä eivät muutu.       
+        
+        store r4, salasana(r3)  ; Talletetaan
+        add r2, =1              ; Lisätään indeksinä käytettävään rekisteriin 1
+        comp r2, =8             ; Verrataan indeksiä
+        jles LUE                ;   ja hypätään lukemaan seuraava luku jos R2 < 8.
+
+Print1  LOAD r1, salasana       ; Tulostetaan tässä luvut ennen salausta. Jos muunnat ensimmäisen luvun binääriksi,
+        out r1, =crt            ;   näet siitä neljä ensimmäistä antamaasi lukua. Vasemmalta lukien ensimmäiset 8 bittiä
+        load r1, salasana(r5)   ;   Vastaavasti toisesta luvusta näet 5. - 8. antamasi luvut.
+        out r1, =crt
+
+
+SALAUS  load r1, salasana       ; Ladataan R1:een salasana -taulukon ensimmäinen alkio
+        xor r1, avain1          ; Salataan eka alkio XORraamalla se avaimella
+        store r1, salasana      ; Ja talletetaan salattu alkio
+        load r1, salasana(r5)   ; Ladataan R1:een salasana -taulukon toinen alkio
+        xor r1, avain2          ; Salataan toka alkio XORraamalla se avaimella
+        store r1, salasana(r5)  ; Ja talletetaan salattu alkio
+        
+Print2  load r1, salasana       ; Print2 tulostaa luvut salattuna.
+        out r1, =crt
+        load r1, salasana(r5)
+        out r1, =crt
+
+Purku   load r1, salasana       ; Puretaan nyt salaus
+        xor r1, avain1          ; Käyttämällä uudelleen XORia samalla avaimella, saadaan salaamaton luku
+        out r1, =crt            ; Tulostetaan salaamaton luku
+        load r1, salasana(r5)
+        xor r1, avain2
+        out r1, =crt
+        
+Purku2  load r1, salasana       ; Puretaan ja tulostetaan vielä alkuperäiset luvut
+        xor r1, avain1          
+        load r2, salasana(r5)   
+        xor r2, avain2
+        
+        load r3, r1             ; Ladataan R3:een purettu 32-bittinen luku
+        shr r3, =24             ; Siirretään bittejä oikealle niin saadaan ensimmäinen luku
+        out r3, =crt            ; Tulostetaan se
+        
+        load r3, r1             ; Ja sitten uudelleen
+        shr r3, =16             ; Näin saadaan bitit, jotka ovat vasemmalta lukien 9. - 16., oikeanpuolimmaisiksi.
+        and r3, tavumask        ; Andataan se tavumaskin kanssa, jossa on 24 nollaa ja 8 ykköstä. Tällöin 
+                                ;   0 and 0 => 0, 1 and 0 => 0, 0 and 1 => 0 ja 1 and 1 => 1. Seurauksena on se,
+                                ;   24 ensimmäistä bittiä vasemmalta lukien muuttuu nolliksi ja 8 viimeistä 
+                                ;   bittiä säilyttävät arvonsa.
+        out r3, =crt            ; Ja tulostetaan se.
+        
+        load r3, r1             ; Sitten seuraavat vastaavasti.
+        shr r3, =8              
+        and r3, tavumask        
+        out r3, =crt
+        
+        load r3, r1
+        and r3, tavumask        ; Koska nyt otetaan siitä 32-bittisestä sanasta 8 viimeistä bittiä jotka ovat
+        out r3, =crt            ;   jo valmiiksi oikealla paikallaan, ei tarvitse siirtää bittejä ensin.
+
+        
+        load r3, r2             ; Sitten tulostetaan loput 4 lukua samalla tavalla kuin ensimmäiset 4.
+        shr r3, =24             
+        out r3, =crt         
+        
+        load r3, r2             
+        shr r3, =16             
+        and r3, tavumask        
+        out r3, =crt            
+        
+        load r3, r2            
+        shr r3, =8              
+        and r3, tavumask        
+        out r3, =crt
+        
+        load r3, r2
+        and r3, tavumask        
+        out r3, =crt        
+        
+LOPPU   svc sp, =halt           ; Lopetetaan ohjelma.

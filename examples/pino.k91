@@ -1,0 +1,15 @@
+    nop             ; No Operation -käsky, jotta Titokoneella ehtii nähdä SP:n arvon suorituksen alussa.
+    push sp, =10    ; Laitetaan pinoon luku 10. SP kasvaa yhdellä mutta FP pysyy samana.
+    push sp, =20    ; Laitetaan pinoon luku 20. SP kasvaa yhdellä mutta FP pysyy samana.
+    
+    load r1, 1(fp)  ; Ladataan r1:een pinoon ensiksi laitettu alkio osoitteesta FP+1
+    out r1, =crt    ;   ja tulostetaan se
+    load r1, 2(fp)  ; Ladataan r1:een pinoon toisena laitettu alkio osoitteesta FP+2
+    out r1, =crt    ;   ja tulostetaan se
+    
+    pop sp, r1      ; Popataan pois pinosta viimeksi laitettu alkio eli luku 20. 
+                    ;   SP laskee yhdellä mutta FP pysyy samana.
+    pop sp, r2      ; Popataan pois pinosta toiseksi viimeisenä laitettu alkio eli luku 10. 
+                    ;   SP laskee yhdellä mutta FP pysyy samana.
+
+    svc sp, =halt

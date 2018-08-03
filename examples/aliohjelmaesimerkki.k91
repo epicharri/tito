@@ -1,0 +1,47 @@
+; Tämä on .k91 -tiedosto, joka on käännettävissä Titokoneella.
+x dc 314                    ; Määritellään x muuttujaksi ja asetetaan sille alkuarvo 314.
+                            ; Huomaa, että tämä ei ole muodossa x dc =314, vaikka muutoin
+                            ;   käytetään merkkiä = kun esim. ladataan rekisteriin jokin luku
+                            ;   tähän tyyliin: load r1, =314.
+y dc 227                    ; Määritellään y muuttujaksi ja asetetaan sille alkuarvo 227
+        
+MAIN push sp, =0            ; varataan pinoon tilaa paluuarvolle
+push sp, x                  ; pushataan muistiosoitteessa x oleva arvo pinoon (arvoparametri)
+push sp, y                  ; pushataan muistiosoitteessa y oleva arvo pinoon (arvoparametri)
+        
+call sp, myLittleSuby       ; kutsutaan aliohjelmaa myLittleSuby
+                            ; call -käsky siirtää automaattisesti vanhan PC:n ja FP:n (R7:n) arvon pinoon
+
+pop sp, r1                  ; Aliohjelmasta on palattu. Popataan sp-pinon päällimmäinen arvo rekisteriin r1.
+                            ; Näin siis saatiin aliohjelman paluuarvo pääohjelmaan.
+        
+out r1, =crt                ; Tulostetaan se
+
+svc sp, =halt               ; Pääohjelman lopetus
+        
+; Aliohjelman toteutus
+; Varataan ensin tilaa muuttujille jotta on helpompi muistaa mitä on tekemässä.
+; Muuttujien nimeämisessä on muistettava että ne ovat globaaleja eli niiden tulee olla yksilöllisiä.
+; Jos siis käytät aliohjelmassa allaolevan sx:n paikalla x (jota käytetään pääohjelmassa), tulee ongelmia.
+            
+paluuarvo equ -4    
+sx equ -3            
+sy equ -2                   ; viimeisenä sp-pinoon laitettu arvo on kohdassa -2(fp) eli siis fp:n arvo - 2  
+                            ; fp-1 ja fp-0 eli kaksi ylintä ovat pääohjelman PC:tä ja FP:tä varten
+
+; Aliohjelma:
+MYLITTLESUBY pushr sp       ; pushr sp laittaa rekisterit r0-r6 (r6=sp) pinoon jotta
+                            ; voit käyttää vapaasti rekistereitä aliohjelmassa
+                      
+load r1, sx(fp)             ; Lataa r1:een osoitteessa fp-3 oleva arvo
+load r2, sy(fp)             ; Lataa r2:een osoitteessa fp-2 oleva arvo
+            
+mul r1, r2                  ; Tehdään pikku laskutoimitus r1 = r1 * r2 jotta tämä aliohjelma tekee edes jotain
+            
+store r1, paluuarvo(fp)     ; Nyt sp-pinossa on osoitteessa fp-4 aliohjelman paluuarvo
+popr sp                     ; Popataan pinosta siihen pushr sp:llä laitetut rekisterit
+exit sp, =2                 ; Palataan pääohjelmaan siten että 2 pinon päällimmäistä arvoa poistetaan pinosta 
+                            ; (nuo mitkä laitettiin push sp, x ja push sp, y aliohjelmaa kutsuttaessa.
+                            ; Pinon päällimmäisenä on nyt ennen aliohjelman kutsua ensiksi laitettu arvo eli kohdassa
+                            ; fp - 4 oleva arvo, jota aliohjelma on muuttanut
+          
