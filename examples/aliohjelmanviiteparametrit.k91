@@ -1,0 +1,62 @@
+; Tämä on .k91 -tiedosto, joka on käännettävissä Titokoneella.
+x dc 42                     ; Määritellään x muuttujaksi ja asetetaan sille alkuarvo 42.
+                            ; Huomaa, että tämä ei ole muodossa x dc =42, vaikka muutoin
+                            ;   käytetään merkkiä = kun esim. ladataan rekisteriin jokin luku
+                            ;   tähän tyyliin: load r1, =42.
+        
+MAIN push sp, =x            ; pushataan muuttujan x osoite pinoon (viiteparametri)
+
+y dc 33                     ; Koska aliohjelma on toteutettu siten, että siihen halutaan viiteparametrit,
+                            ;   alustetaan nyt muuttuja jota voi käyttää viiteparametrina.
+                            ;   Tällainen muuttujan alustus voidaan siis tehdä keskellä koodia. Sitä ei ole
+                            ;   pakko tehdä aivan lähdekoodin alussa. 
+
+push sp, =y                 ; pushataan muuttujan y osoite pinoon (viiteparametri)
+        
+call sp, SWAP               ; kutsutaan aliohjelmaa SWAP, joka vaihtaa x:n ja y:n arvot keskenään
+                            ; call -käsky siirtää automaattisesti vanhan PC:n ja FP:n (R7:n) arvon pinoon
+
+; Nyt tässä ei ole mitään erillistä paluuarvoa, sillä aliohjelma muutti suoraan viiteparametreina annettujen
+;   muuttujien arvoja. Paluuarvon välittämisestä voit katsoa esimerkin aliohjelmaesimerkki.k91.
+
+load r1, x                  ; Aliohjelmasta on palattu. Ladataan aliohjelman muuttama x:n arvo rekisteriin r1.
+load r2, y                  ; Ja samoin y:n arvo.
+        
+out r1, =crt                ; Tulostetaan x:n arvo, joka on nyt 33 eli entinen y:n arvo.
+out r2, =crt                ; Tulostetaan y:n arvo, joka on nyt 42 eli entinen x:n arvo.
+
+svc sp, =halt               ; Pääohjelman lopetus
+        
+; Aliohjelman toteutus
+; Varataan ensin tilaa muuttujille jotta on helpompi muistaa mitä on tekemässä.
+; Muuttujien nimeämisessä on muistettava että ne ovat globaaleja eli niiden tulee olla yksilöllisiä.
+; Jos siis käytät aliohjelmassa allaolevan sx:n paikalla x (jota käytetään pääohjelmassa), tulee ongelmia.
+
+; Aliohjelma swap vastaa korkean tason kielen komentoa public static void swap(Luku a, Luku b). 
+;   Se siis vaihtaa parametreina annettujen muuttujien arvot vähän samantyyppisesti kuin olioiden 
+;   sisäistä tilaa voidaan muuttaa Javassa. Tässä tapauksessa aliohjelmalle on annettava 
+;   parametreina muuttujien osoitteet (push sp, =muuttujannimi. Erillistä paluuarvoa ei nyt välitetä.
+
+sx equ -3            
+sy equ -2                   ; viimeisenä sp-pinoon laitettu arvo on kohdassa -2(fp) eli siis fp:n arvo - 2  
+                            ; fp-1 ja fp-0 eli kaksi ylintä ovat pääohjelman PC:tä ja FP:tä varten
+
+; Aliohjelma:
+SWAP pushr sp               ; pushr sp laittaa rekisterit r0-r6 (r6=sp) pinoon jotta
+                            ; voit käyttää vapaasti rekistereitä aliohjelmassa
+                      
+load r1, @sx(fp)            ; Lataa r1:een arvo, johon osoitteessa fp-3 oleva arvo viittaa
+load r2, @sy(fp)            ; Lataa r2:een arvo, johon osoitteessa fp-2 oleva arvo viittaa
+store r1, @sy(fp)           ; Talletetaan r1:stä arvo osoitteeseen johon sy(fp) eli fp-2 viittaa
+store r2, @sx(fp)           ; Talletetaan r2:sta arvo osoitteeseen johon sx(fp) eli fp-3 viittaa
+
+; Nyt voidaan lähteä pois aliohjelmasta. Viiteparametreina annettujen muuttujien arvot on vaihdettu.
+
+popr sp                     ; Poprataan pinosta siihen pushr sp:llä laitetut rekisterit. Tämä käsky
+                            ;   asettaa aliohjelmaa kutsuneen rutiinin rekisterien arvot takaisin.
+exit sp, =2                 ; Palataan pääohjelmaan. Käsky asettaa FP:n ja PC:n arvon ennalleen ja
+                            ;   poistaa pinosta 2 päällimmäistä arvoa, eli nuo mitkä laitettiin
+                            ;   push sp, =x ja push sp, =y käskyillä aliohjelmaa kutsuttaessa.
+                            ;   Pino-osoitin SP osoittaa nyt siihen mihin kuuluukin. Aliohjelmalle parametreina
+                            ;   annetut osoitteet eivät ole enää pinossa.
+          
