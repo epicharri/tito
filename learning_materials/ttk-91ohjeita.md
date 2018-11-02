@@ -47,6 +47,13 @@ SVC SP, =HALT
 Tämä konekäsky lopettaa ohjelman.
 
 
+## Luvun lukeminen näppäimistöltä
+
+Titokoneella voidaan käsitellä vain kokonaislukuja. Luku luetaan näppäimistöltä näin:
+```IN R1, =KBD```
+Tämän konekäskyn suorituksen jälkeen rekisterin R1 arvo on näpppäimistöltä luettu luku.
+
+
 ## Muuttujat, vakiot, tietueet, taulukot ja laskutoimitukset
 
 ### Muuttujat
