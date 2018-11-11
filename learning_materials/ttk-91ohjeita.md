@@ -54,6 +54,44 @@ Titokoneella voidaan käsitellä vain kokonaislukuja. Luku luetaan näppäimist�
 Tämän konekäskyn suorituksen jälkeen rekisterin R1 arvo on näpppäimistöltä luettu luku.
 
 
+## Pienin ja suurin TTK-91:n hyväksymä kokonaisluku
+
+### Käytettävissä 32 bittiä luvun ilmaisuun
+
+Kun ohjelma lukee käyttäjän syötteen operaatiolla `IN` tai kun määritellään muuttujan tai vakion arvo, on käytettävissä 32 bittiä luvun ilmaisuun. Koska käytössä on myös negatiiviset luvut, lukualue tällöin seuraava:
+
+* Pienin kokonaisluku on - 2^31 = - 2147483648
+* Suurin kokonaisluku on 2^31 - 1 = 2147483647
+
+### Käytettävissä 16 bittiä luvun ilmaisuun
+
+Kun kokonaislukua käytetään konekäskyn yhteydessä, on käytössä 16 bittiä luvun ilmaisuun. Koska käytössä on myös negatiiviset luvut, lukualue on tällöin seuraava:
+
+* Pienin kokonaisluku on - 2^15 = -32768
+* Suurin kokonaisluku on 2^15 = 32767
+
+#### Konekäskyn binääriesitys
+
+Tässä on taulukko konekäskyn binääriesityksestä, josta voitte havaita, että konekäskyn yhteydessä on vain 16 bittiä käytössä kokonaisluvun ilmaisua varten.
+
+Konekäskyn rakenteesta on lisätietoa [täällä.](https://www.cs.helsinki.fi/group/titokone/ttk91_ref_fi.html). Alla oleva taulukko on suoraan kyseisestä lähteestä.
+
+```
+      8 bittiä       3b    2b    3b              16 bittiä
+ +----------------+------+----+------+--------------------------------+
+ | Operaatiokoodi |  Rj  | M  |  Ri  |   osoite / välitön operandi    |
+ +----------------+------+----+------+--------------------------------+
+  31            24 23              16 15                             0
+
+  Lähde: Tietokoneen toiminta -kurssin kotisivu, Helsingin yliopisto
+  https://www.cs.helsinki.fi/group/titokone/ttk91_ref_fi.html
+```
+
+Konekäskyn binääriesityksessä vasemmalta lukien ensimmäiset 8 bittiä ovat operaatiokoodi, seuraavat 3 bittiä ensimmäinen rekisteri, sitten 2 bittiä osoitustapa, sitten 3 bittiä toinen rekisteri ja lopuksi 16 bittiä muistiosoitetta tai välitöntä operandia varten. Luvun ilmaisu konekäskyn yhteydessä on siis mahdollista käyttämällä 16 bittiä. Koska TTK-91:ssä on sekä negatiiviset että positiiviset kokonaisluvut, pienin luku mitä konekäskyn yhteydessä voidaan käyttää, on - 2^15 = - 32768 ja suurin luku on 2^15 - 1 = 32767.
+
+Seuraavassa kappaleessa näytetään miten voidaan käyttää pienempiä lukuja kuin -32768 ja suurempia lukuja kuin 32767.
+
+
 ## Muuttujat, vakiot, tietueet, taulukot ja laskutoimitukset
 
 ### Muuttujat
@@ -63,7 +101,14 @@ Muuttujat alustetaan _pseudokäskyllä_ DC (Data Constant) näin:
 ```
 A DC 0
 B DC 42
+PIENIN DC -2147483648   ; Pienin TTK-91:n hyväksymä kokonaisluku eli - 2^31.
+SUURIN DC 2147483647    ; Suurin TTK-91:n hyväksymä kokonaisluku eli 2^31 - 1.
 ```
+
+> Konekäskyn yhteydessä pienin mahdollinen luku on -32768 ja suurin 32767.
+
+> Lukua operaatiolla `IN` luettaessa ja muuttujan tai vakion määrittelyssä pienin mahdollinen luku on -2147483648 ja suurin 2147483647.
+
 _Pseudokäsky_ ei ole "oikea" konekäsky. Se huomioidaan vain käännösvaiheessa. Esimerkiksi `A DC 0` pseudokäsky varaa käännösvaiheessa muuttujalle A muistiosoitteen ja asettaa sen arvoksi 0. Kääntäjä asettaa _symbolitauluun_ tiedon muuttujan nimestä ja osoitteesta.
 
 > Muuttujan määrittely ja alustaminen `A DC 0`. Samantapaisesti siis kuten Javassa `int a = 0;`
@@ -76,17 +121,37 @@ Vakiot määritellään pseudokäskyllä EQU näin:
 ```
 VASTAUS EQU 42
 ```
-> Vakiota ei voi muuttaa. Sen arvo on aina se mihin se ohjelmassa määritellään. Tätä vastaa Javascriptin uusimmissa versiossa käytettävä `const vastaus = 42`.
+> Vakiota ei voi muuttaa. Sen arvo on aina se mihin se ohjelmassa määritellään. Tätä vastaa Javascriptin uudemmissa versioissa käytettävä `const vastaus = 42`.
 Kuten DC:n, myös EQU:n avulla määritellyn vakion nimi ja arvo talletetaan symbolitauluun käännösvaiheessa.
 
-#### Tietueet ja taulukot
+### Tietueet ja taulukot
 
 Tietueelle ja taulukolle varataan tilaa pseudokäskyllä DS (Data Segment) näin:
+
 
 ```
 PERSON DS 4 
 ```
+
 Tämä pseudokäsky alustaa taulukon PERSON nelialkioiseksi. Taulukolle varataan siis tilaa samantyyppisesti kuin Javassa `int person = new int[4]`. 
+
+##### Rekisterin käyttö indeksinä
+
+Taulukon läpikäyminen on kätevintä tehdä _indeksirekisterin_ avulla. Rekisteriä, jonka sisältämää arvoa käytetään taulukkoa läpikäydessä indeksinä, kutsutaan indeksirekisteriksi.
+
+Esimerkki:
+
+```
+PERSON DS 4             ; Varataan taulukolle muistialue, kooltaan 4. Kääntäjä asettaa taulukon alkuosoitteeksi
+                        ;   jonkin muistiosoitteen.
+
+LOAD R2, =0             ; Käytetään rekisteriä R2 indeksirekisterinä. Indeksiksi asetetaan aluksi 0.
+LOAD R1, =3             ; Ladataan rekisteriin R1 jokin arvo, tässä tapauksessa luku 3.
+STORE R1, PERSON(R2)    ; Tämä käsky tallettaa (STORE) rekisterin R1 sisällön muistiosoitteeseen, joka saadaan
+                        ;    laskemalla yhteen indeksirekisterin R2 arvo ja PERSON -taulukon osoite.
+
+
+```
 
 
 ### Laskutoimitukset
