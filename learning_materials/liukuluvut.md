@@ -58,6 +58,8 @@ Saimme lopulta kertolaskun tuloksen desimaaliosan esitykseksi **0**, joten binä
 
 Siten desimaaliosa **,8125 on 1101<sub>2</sub>**.
 
+Tässä tapauksessa saimme äärellisen pituisen binääriosan. Jos desimaaliosa olisi esimerkiksi luvusta 1,20, niin binääriosa olisi päättymätön. Tällöin binääriosaa lasketaan vain siihen saakka mitä on mahdollista saada mahtumaan liukulukuun.
+
 
 ### 4. Eksponentin valinta
 
@@ -77,7 +79,7 @@ Eksponentti saadaan laskemalla kuinka paljon binääripistettä tulee siirtää 
 
 Pistettä siirrettiin 5 pistettä vasemmalle jolloin saimme luvun muotoon 1.100101101 * 2<sup>5</sup>. Luku 5 on haluamamme eksponentti.
 
-Samalla saadaan määriteltyä **mantissa** luvusta 1.100101101. Palataan siihen alempana.
+Samalla saadaan määriteltyä **mantissa** luvusta 1.100101101. Palataan siihen kuitenkin alempana.
 
 
 #### Muunnetaan eksponentti vakiolisäys 127 -muotoon
@@ -114,7 +116,7 @@ Tämä on myös nyt helppoa. Yllä eksponenttia selvittäessä on jo muunnettu b
 Koska IEEE-liukulukustandardissa käytetään _piilobittiä_, eli mantissan ensimmäinen osa oletetaan luvuksi 1, sitä ei tarvitse merkitä mantissaan. Binääriesitys on muodossa 1.100101101. Nyt pisteen vasemmalla puolella on bitti, jota ei laiteta mantissaan.
 > Piilobitti on IEEE-liukuluvussa binääripisteen vasemmalla puolella oleva bitti 1, jonka oletetaan olevan 1, joten sitä ei tarvitse merkitä. Piilobitin ansiosta voidaan ilmaista luku tarkemmin.
 
-Mantissan pituus on 23 bittiä. Se alkaa tuosta binääripisteen oikealta puolen ja loppuosa täytetään nollilla. Mantissa on siten tässä tapauksessa .
+Mantissan pituus on 23 bittiä. Se alkaa tuosta binääripisteen oikealta puolen ja loppuosa täytetään nollilla. Mantissa on siten tässä tapauksessa `10010110100000000000000`.
 
 
 ### YHDISTETÄÄN KAIKKI
