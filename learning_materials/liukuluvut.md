@@ -16,7 +16,7 @@ Muunnetaan desimaaliluku **-50,8125** liukuluvuksi.
 
 ### 1. Merkki (+ vai -)
 
-IEEE-liukuluvussa ensimmäinen bitti vasemmalta ilmaisee merkin. Positiista lukua ilmaisee luku 0, sillä (-1)<sup>0</sup> = 1. Negatiivista lukua ilmaisee luku 1, sillä (-1)<sup>1</sup> = -1.
+IEEE-liukuluvussa ensimmäinen bitti vasemmalta ilmaisee merkin. Positiivista lukua ilmaisee luku 0, sillä (-1)<sup>0</sup> = 1. Negatiivista lukua ilmaisee luku 1, sillä (-1)<sup>1</sup> = -1.
 
 #### **Positiivisen (+) merkki on 0**
 #### **Negatiivisen (-) merkki on 1**
@@ -37,7 +37,7 @@ Muunnetaan desimaaliluvun 50,8125 kokonaislukuosa **50** binääriluvuksi.
 | **3** | : | 2 | = | **1** |  | `1` | Viidenneksi viimeisin bitti |
 | **1** | : | 2 | = | 0 |  | `1` | Kuudenneksi viimeisin bitti (vasemmanpuoleisin bitti) |
 
-Saimme lopulta jakolaskun tulokseksi **0**. Nyt haluttu binääriluku saadaan valitsemalla jakojäännökset ylhäältä alas luettuna.
+Saimme lopulta jakolaskun tulokseksi **0**. Nyt haluttu binääriluku saadaan valitsemalla jakojäännökset **alhaalta ylös** luettuna.
 
 Siten **50 = 110010<sub>2</sub>**.
 
