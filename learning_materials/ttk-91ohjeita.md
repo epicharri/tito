@@ -50,7 +50,11 @@ Tämä konekäsky lopettaa ohjelman.
 ## Luvun lukeminen näppäimistöltä
 
 Titokoneella voidaan käsitellä vain kokonaislukuja. Luku luetaan näppäimistöltä näin:
-```IN R1, =KBD```
+
+```
+IN R1, =KBD
+```
+
 Tämän konekäskyn suorituksen jälkeen rekisterin R1 arvo on näpppäimistöltä luettu luku.
 
 
@@ -99,10 +103,23 @@ Seuraavassa kappaleessa näytetään miten voidaan käyttää pienempiä lukuja 
 Muuttujat alustetaan _pseudokäskyllä_ DC (Data Constant) näin:
 
 ```
-A DC 0
-B DC 42
+A DC 0     ; Kuten Java-kielellä: int A = 0;
+B DC 42    ; Kuten Java-kielellä: int B = 42;
+```
+
+Konekäskyn yhteydessä osoiteosaan mahtuu vain välillä -32786 ... 32767 olevia lukuja. Pseudokäskyn DC avulla voi määritellä muuttujan arvoksi tämän välin ulkopuolisia lukuja, joita voi sitten käyttää ohjelmassa.
+
+```
+MILTSI DC 1000000       ; int MILTSI = 1000000; 
 PIENIN DC -2147483648   ; Pienin TTK-91:n hyväksymä kokonaisluku eli - 2^31.
 SUURIN DC 2147483647    ; Suurin TTK-91:n hyväksymä kokonaisluku eli 2^31 - 1.
+```
+
+Muuttujaan alustettuja isoja lukuja voi käyttää näin:
+
+```
+LOAD R1, MILTSI         ; R1:n arvoksi tulee muuttujan MILTSI arvo 1000000.  
+                        ; Tämä ei toimisi: LOAD R1, =1000000
 ```
 
 > Konekäskyn yhteydessä pienin mahdollinen luku on -32768 ja suurin 32767.
@@ -163,7 +180,7 @@ TTK-91:ssä on käytössä seuraavat laskutoimitukset.
 |`ADD`|Yhteenlasku | `ADD R1, =5` lisää rekisterin R1 arvoon luvun 5.|
 |`SUB`|Vähennyslasku | `SUB R1, 2` vähentää rekisterin R1 arvosta MUISTIOSOITTEEN 2 sisältämän arvon.|
 |`MUL`|Kertolasku | `MUL R1, X` kertoo rekisterin R1 arvon muistiosoitteessa X olevalla arvolla (muuttujan X arvolla).|
-|`DIV`|Jakolasku | `DIV R1, X` jakaa rekisterin R1 arvon muistiosoitteessa X olevalla arvolla. Huom! Esim. kun R1:n arvo on 5 ja X:n arvo 2, eli suoritetaan laskutoimitus 9/2, tuloksena on 4. Luku siis pyöristyy kokonaisluvuksi alaspäin. |
+|`DIV`|Jakolasku | `DIV R1, X` jakaa rekisterin R1 arvon muistiosoitteessa X olevalla arvolla. Huom! Esim. kun R1:n arvo on 9 ja X:n arvo 2, eli suoritetaan laskutoimitus 9/2, tuloksena on 4. Luku siis pyöristyy kokonaisluvuksi alaspäin. |
 |`MOD`|Modulo (jakojäännös) | `MOD R1, =3` muuttaa rekisterin R1 arvoksi jakojäännöksen. Esim. R1:n arvo on 5, niin jakojäännös 3:lla jaettaessa on 2.|
 
 
@@ -290,12 +307,12 @@ Näitä käskyjä käytetään rekisterin kanssa ilman mitään muuta vertailuk�
 
 ##### Esimerkki
 
-Tulostetaan luvut 9...0:
+Tulostetaan luvut 9...0 luupin avulla.
 ```
           LOAD R1, =9
-TULOSTA   OUT R1, =CRT
+Tulosta   OUT R1, =CRT
           SUB R1, =1
-          JNNEG R1, tulosta  ; Jos R1>=0, hyppää kohtaan TULOSTA
+          JNNEG R1, Tulosta  ; Jos R1>=0, hyppää kohtaan TULOSTA
           SVC SP, =HALT
 ```
 
