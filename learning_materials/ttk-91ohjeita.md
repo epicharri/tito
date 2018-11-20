@@ -141,6 +141,36 @@ VASTAUS EQU 42
 > Vakiota ei voi muuttaa. Sen arvo on aina se mihin se ohjelmassa määritellään. Tätä vastaa Javascriptin uudemmissa versioissa käytettävä `const vastaus = 42`.
 Kuten DC:n, myös EQU:n avulla määritellyn vakion nimi ja arvo talletetaan symbolitauluun käännösvaiheessa.
 
+
+#### Vakioiden käyttäminen
+
+Esimerkki vakioiden käyttämisestä ja vertailua muuttujan käyttämiseen.
+
+
+```
+
+MILJARDI DC 1000000000
+suurinVakio EQU 32767
+pieninVakio EQU -32768
+
+LOAD R1, =suurinVakio     ; Käännöksen jälkeen: LOAD R1, =32767
+                          ;   Käännösvaiheessa suurinVakio on korvattu vakion ARVOLLA!
+OUT R1, =CRT
+
+LOAD R1, =pieninVakio     ; Käännöksen jälkeen: LOAD R1, =-32768
+OUT R1, =CRT
+
+LOAD R1, MILJARDI         ; Käännöksen jälkeen sanan MILJARDI tilalla on muuttujan osoite, eli käsky on muodossa LOAD R1, 10 
+                          ;   (jos muuttujan MILJARDI osoite on 10)
+OUT R1, =CRT              ;   Rekisterin R1 arvoksi asettiin osoitteessa 10 (eli osoitteessa MILJARDI) oleva arvo 1000000000.
+
+SVC SP, =HALT
+
+```
+
+Tästä kannattaa huomata erityisesti, että pseudokäskyllä EQU voi asettaa vakiolle arvoja vain välillä -32768..32767. Sallitut arvot ovat siis samat kuin mitä lukuja osoite/vakio-osaan voi muutenkin kirjoittaa. Tämän välin ulkopuolisia lukuja voi tallettaa muuttujien arvoiksi ja käyttää niitä, kuten tässä esimerkissä tehtiin muuttujalle MILJARDI. 
+
+
 ### Tietueet ja taulukot
 
 Tietueelle ja taulukolle varataan tilaa pseudokäskyllä DS (Data Segment) näin:
@@ -152,7 +182,7 @@ PERSON DS 4
 
 Tämä pseudokäsky alustaa taulukon PERSON nelialkioiseksi. Taulukolle varataan siis tilaa samantyyppisesti kuin Javassa `int person = new int[4]`. 
 
-##### Rekisterin käyttö indeksinä
+#### Rekisterin käyttö indeksinä
 
 Taulukon läpikäyminen on kätevintä tehdä _indeksirekisterin_ avulla. Rekisteriä, jonka sisältämää arvoa käytetään taulukkoa läpikäydessä indeksinä, kutsutaan indeksirekisteriksi.
 
@@ -164,11 +194,14 @@ PERSON DS 4             ; Varataan taulukolle muistialue, kooltaan 4. Kääntäj
 
 LOAD R2, =0             ; Käytetään rekisteriä R2 indeksirekisterinä. Indeksiksi asetetaan aluksi 0.
 LOAD R1, =3             ; Ladataan rekisteriin R1 jokin arvo, tässä tapauksessa luku 3.
-STORE R1, PERSON(R2)    ; Tämä käsky tallettaa (STORE) rekisterin R1 sisällön muistiosoitteeseen, joka saadaan
-                        ;    laskemalla yhteen indeksirekisterin R2 arvo ja PERSON -taulukon osoite.
-
+STORE R1, PERSON(R2)    ; Tämä käsky tallettaa (STORE) rekisterin R1 sisällön 
+                        ;   muistiosoitteeseen, joka saadaan laskemalla yhteen
+                        ;   indeksirekisterin R2 arvo ja PERSON -taulukon osoite.
+                        ;   Kun R2=3, tallennus tapahtui PERSON-taulukon indeksiin 3.
+                      
 
 ```
+
 
 
 ### Laskutoimitukset
@@ -187,14 +220,14 @@ TTK-91:ssä on käytössä seuraavat laskutoimitukset.
 ### Laskutoimitusesimerkkejä
 
 
-##### Luvuilla laskeminen
+#### Luvuilla laskeminen
 
 ```
 LOAD R1, =40  ; Ladataan rekisteriin R1 luku 40.
 ADD R1, =2    ; Lisätään rekisterissä R1 olevaan arvoon luku 2.
 ```
 
-##### Muuttujan arvoilla laskeminen ja tuloksen tallettaminen
+#### Muuttujan arvoilla laskeminen ja tuloksen tallettaminen
 
 ```
 A DC 2      ; int a = 2
@@ -212,7 +245,7 @@ Mikä ihmeen `STORE`? No, sillä talletetaan rekisterin arvo muuttujan arvoksi. 
 
 Konekielessä ehtolauseet ja niiden mukaan toimiminen tehdään hyppäämällä ehtojen toteutumisen mukaisiin muistiosoitteisiin.
 
-##### Esimerkki: LUUPPI JA IF-THEN
+#### Esimerkki: LUUPPI JA IF-THEN
 
 > Esitellään uusia käskyjä vertailukäsky `COMP` ja ehdollinen hyppykäsky `JLES` (Jump if Less). 
 Lisäksi: voit laittaa konekäskyn eteen sanan ja koodissa hypätä siihen.
@@ -230,7 +263,7 @@ UUSIKSI   OUT R1, =CRT  ; Tulostetaan R1:ssä oleva luku.
 
 ```
 
-##### Koodirivin muistiosoitteen käyttäminen hyppykäskyä varten
+#### Koodirivin muistiosoitteen käyttäminen hyppykäskyä varten
 
 Rivin alussa oleva sanaa, joka ei ole mikään kielen käskykannan operaatio, voi käyttää ohjelmoidessa rivin muistiosoitteena. Käännösvaiheessa kääntäjä huomaa nämä sanat ja asettaa koodissa jokaiseen kohtaan, missä sana on konekäskyn osana (kuten yllä olevassa koodissa kohdassa `JUMP UUSIKSI`), kyseisen sanan tilalle sen rivin muistiosoitteen minkä alussa sana on. 
 
@@ -247,7 +280,7 @@ UUSIKSI                 ; **Ei näin! Tällä rivillä on oltava myös konekäsk
           OUT R1, =CRT
 ```
 
-##### Esimerkki IF-THEN-ELSE
+#### Esimerkki IF-THEN-ELSE
 
 Tässä esimerkkiohjelmassa pyydetään näppäimistöltä lukua. Jos luku on 0, sitä ei hyväksytä vaan pyydetään uudelleen lukua. Sen jälkeen se talletetaan muuttujan A arvoksi ja verrataan muuttujien A ja B arvoa keskenään. Huomatkaa että vertailussa vähintään toisen luvuista pitää olla rekisterissä! Jos vertailun `COMP R1, B` tulos on että R1 > B, `JGRE suurempi` -konekäskyn avulla siirrytään osoitteeseen `suurempi`.
 
@@ -291,7 +324,7 @@ lopetus   SVC SP, =HALT      ; Lopetus pitää merkitä jos sinne halutaan hypä
 Muut hypyt ovat ehdollisia hyppyjä. Jos ehto toteutuu, hypätään käskyn yhteydessä annettavaan osoitteeseen. Muutoin jatketaan seuraavan käskyn suoritukseen, eli lähdekoodissa siis seuraavalla rivillä olevan käskyn suorittamiseen.
 
 
-#### Ehdolliset hypyt positiivisuuden ja negatiivisuuden perusteella
+### Ehdolliset hypyt positiivisuuden ja negatiivisuuden perusteella
 
 Näitä käskyjä käytetään rekisterin kanssa ilman mitään muuta vertailukäskyä.
 
@@ -299,13 +332,13 @@ Näitä käskyjä käytetään rekisterin kanssa ilman mitään muuta vertailuk�
 | :--- | :--- | :--- | :--- |
 | JNEG | Jump if NEGative. | `JNEG R1, tuliNegaa` | Jos R1<0, hyppää osoitteeseen `tuliNegaa`. |
 | JZER | Jump if ZERo | `JZER R3, onNolla` | Jos R3==0, hyppää osoitteeseen `onNolla`.|
-| JPOS | Jump if POSitive | `JPOS R2, anna` | Jos R2>0, hyppää osoitteeseen `anna`. |
+| JPOS | Jump if POSitive | `JPOS R2, onPosii` | Jos R2>0, hyppää osoitteeseen `onPosii`. |
 | JNNEG |	Jump if Not NEGative | `JNNEG R5, eiNega` |  Jos R5 >= 0, hyppää osoitteseen `eiNega` |
-| JNZER |	Jump if Not ZERo) | `JNZER R4, eiPaha` | Jos R4 erisuuri kuin 0, hyppää osoitteeseen `eiPaha` |
-| JNPOS |	Jump if Not POSitive | `JNPOS R1, mitasNyt` | Jos R1 <= 0, hyppää `mitasNyt` |
+| JNZER |	Jump if Not ZERo) | `JNZER R4, eiNolla` | Jos R4 erisuuri kuin 0, hyppää osoitteeseen `eiNolla` |
+| JNPOS |	Jump if Not POSitive | `JNPOS R1, eiPosii` | Jos R1 <= 0, hyppää `eiPosii` |
 
 
-##### Esimerkki
+#### Yksinkertainen luuppi
 
 Tulostetaan luvut 9...0 luupin avulla.
 ```
@@ -318,7 +351,7 @@ Tulosta   OUT R1, =CRT
 
 
 
-#### Ehdolliset hypyt suuruusvertailukäskyn `COMP` jälkeen.
+### Ehdolliset hypyt suuruusvertailukäskyn `COMP` jälkeen.
 
 Vertailukäskyn (esim. `COMP R1, =10`) jälkeen tilarekisterin (SR) bittien G (greater), L (less) ja E (equals) arvot muuttuvat sen mukaisiksi mikä vertailun tulos on ollut.
 
@@ -352,19 +385,103 @@ JGRE suurempi   ; Jump if Greater. Jos vertailun tulos oli se, että R1:n arvo o
 > Muista, että näitä suuruusvertailuhyppykäskyjä käytettäessä on aina ensin tehtävä vertailu `COMP` -käskyllä. Esimerkkejä: `COMP R1, X` tai `COMP R1, =10`.
 
 
-### Osoitusmuodot
+### Lukujen lisääminen taulukkoon ja taulukon lukeminen
+
+Tässä esimerkissä käyttäjältä pyydetään 10 positiivista lukua jotka talletetaan taulukkoon. Jos käyttäjä syöttää ei-positiivisen luvun, tai kun kaikki luvut on saatu, ohjelma tulostaa annetut luvut viimeisenä annetusta alkaen ja ohjelma lopetetaan. Jos yhtään positiivista lukua ei ole annettu, mitään ei tulosteta ja ohjelma lopetetaan.
+
+```
+          LUVUT DS 10           ; Varataan tilaa taulukolle LUVUT
+                                ;   Javassa: int[] LUVUT = new int[10]
+
+          LOAD R1, =0           ; R1 = 0. Tätä käytetään indeksirekisterinä.
+
+Anna      IN R2, =KBD           ; R2 = näppäimistöltä luettu luku.
+          JNPOS R2, Elsa        ; Jos R2<=0, hyppää kohtaan Elsa.
+          STORE R2, LUVUT(R1)   ; Tallenna R2:n arvo taulukkoon kohtaan R1 eli
+                                ;   muistiosoitteeseen R1:n arvo + taulukon
+                                ;   LUVUT osoite. Vertaa: LUVUT[R1] = R2;
+
+          ADD R1, =1            ; Lisätään indeksirekisterin arvoa yhdellä.
+          COMP R1, =10          ; Verrataan sitä 10:een.
+          JLES Anna             ; Jos R1<10, hyppää kohtaan Anna
+
+Elsa      JZER R1, LetItGo      ; Jos R1 == 0 (yhtään lukua ei ole annettu),
+                                ;   hypätään kohtaan LetItGo
+
+
+          ; Tulostetaan luvut viimeksi annetusta alkaen:
+
+Snowgies  SUB R1, =1            ; Vähennetään indeksirekisteristä 1
+          LOAD R2, LUVUT(R1)    ; R2 = LUVUT[R1]
+          OUT R2, =CRT          ; Tulostetaan luku
+          JPOS R1, Snowgies     ; Jos R1 > 0, hyppää kohtaan Snowgies
+
+LetItGo   SVC SP, =HALT         ; Ohjelman lopetus.
+
+
+```
+
+Esimerkissä toteutettiin 
+
+:snowflake: lukujen lisääminen taulukkoon
+
+:snowflake: lukujen lukeminen taulukosta
+
+:snowflake: ehdollinen hyppy suuruusjärjestysvertailukäskyn `COMP` avulla
+
+:snowflake: ehdollisia hyppyjä rekisterin sisällön merkin (ei-positiivinen, nolla, positiivinen) perusteella
+
+:snowflake: näytettiin kaksi suuntaa miten käydä läpi luuppia (0...9 ja 9...0).
+
+
+
+### Osoitusmuodot ja osoitinmuuttujat
 
 Konekäskyn yhteydessä voi käyttää osoitusmuotoina _välitöntä_, _suoraa_ ja _epäsuoraa_ osoitusta. Konekäskyn kääntämisen jälkeen nämä ilmaistaan kahtena bittinä konekäskyn binääriesityksessä kuten esitettiin aiemmin [täällä.](#konekäskyn-binääriesitys)
 
 
-#### Välitön osoitus
+#### Esimerkki osoitusmuotojen käytöstä ja osoitinmuuttujista
+
+
+```
+; Alustetaan ensin muuttujat.
+
+X DC 42       ; int x = 42; 
+PX DC 0       ; X:n osoitinmuuttuja
+PPX DC 0      ; PX:n osoitinmuuttuja 
+
+; Määritellään osoitinmuuttujien arvot
+
+LOAD R1, =X   ; Ladataan R1:een X:n OSOITE.
+STORE R1, PX  ; Talletetaan X:n osoite PX:n arvoksi.
+              ;   Nyt PX osoittaa X:n arvoon.
+
+LOAD R1, =PX  ; Ladataan R1:een PX:n OSOITE
+STORE R1, PPX ; Talletetaan PX:n osoite PPX:n arvoksi.
+
+; Käytetään noita
+
+LOAD R1, X    ; R1 = haeArvoOsoitteesta(X)
+
+LOAD R1, @PX  ; Ladataan R1:een PX:n osoittama arvo
+              ;   R1 = haeArvoOsoitteesta(haeArvoOsoitteesta(PX))
+              ;   R1:ssä on nyt X:n arvo.
+
+LOAD R1, @PPX ; Ladataan R1:een PPX:N osoittama arvo
+              ;   R1 = haeArvoOsoitteesta(haeArvoOsoitteesta(PPX))
+              ;   R1:ssä on nyt PX:n arvo (jonka arvo on X:n osoite)
+
+```
+
+
+### Välitön osoitus
 
 Välitön osoitustapa on se, missä konekäskyn osoiteosassa eli oikeanpuoleisimpina 16 bittinä on jo valmiiksi eli välittömästi se arvo mitä on tarkoitus käyttää konekäskyn suorituksessa. Ohjelmoidessa välitön osoitus ilmaistaan = -merkillä. Esimerkiksi konekäskyssä `LOAD R1, =100` on kyse välittömästä osoitustavasta. Prosessori havaitsee välittömän osoitustavan konekäskyssä olevista kahdesta bitistä jotka kertovat muistinoutojen määrän. Välittömässä niiden bittien arvo on 0, joten mitään ei tarvitse hakea muistista ja prosessori voi ryhtyä suorittamaan käskyä.
 
 > Välitön osoitus: Esimerkiksi `LOAD R1, =100` lataa rekisteriin R1 luvun 100.
 
 
-#### Suora osoitus
+### Suora osoitus
 
 Suorassa osoituksessa konekäskyn osoiteosassa eli oikeanpuoleisimpina 16 bittinä on muistiosoite, josta operaatiota varten tarvittava tieto on haettava. Ohjelmoidessa suora osoitus ilmaistaan ilman mitään erikoismerkkejä. 
 
@@ -381,13 +498,13 @@ Käskyn nouto- ja suoritussyklissä asia tapahtuu näin:
 > Suora osoitus: esimerkiksi `LOAD R1, X` lataa rekisteriin R1 _muistiosoitteen_ X sisällön eli toisin sanottuna _muuttujan_ X arvon.
 
 
-#### Epäsuora osoitus
+### Epäsuora osoitus
 
 Epäsuora osoitus ilmaistaan ohjelmoidessa @ -merkillä. Esimerkiksi `LOAD R1, @PX` lataa rekisteriin R1 muuttujan PX arvon mukaisen muistipaikan sisällön. Toisella tavalla sanoen se konekäsky lataa rekisteriin R1 _muuttujan PX osoittaman arvon_.
 
 Osoitustapaa ilmaisevien bittien arvo on epäsuorassa osoituksessa 2, joten prosessori tekee 2 muistinoutoa.
 
-##### Esimerkki
+### Esimerkki osoitinmuuttujista
 
 Oletetaan seuraavat 4 asiaa
 * Muuttujan X arvo eli muistiosoitteen X sisältö on 1000.
