@@ -34,7 +34,7 @@ Seuraavaksi tulostetaan rekisteriin R1 talletettu arvo näytölle OUT -käskyll�
 
 Tämä konekäsky lähettää CRT -laitteelle eli näytölle rekisterin R1 sisällön tulostettavaksi. Siis tuon siihen aiemmin ladatun luvun 2.
 
-> Muistutus: ensimmäinen operandi on aina jokin rekisteri!
+> Muistutus: ensimmäinen operandi on aina jossakin rekisterissä!
 
 ### Ohjelman lopetus
 
@@ -67,7 +67,7 @@ Kun ohjelma lukee käyttäjän syötteen operaatiolla `IN` tai kun määritellä
 * Pienin kokonaisluku on - 2^31 = - 2147483648
 * Suurin kokonaisluku on 2^31 - 1 = 2147483647
 
-### Käytettävissä 16 bittiä luvun ilmaisuun
+### Konekäskyn yhteydessä on käytettävissä 16 bittiä luvun ilmaisuun
 
 Kun kokonaislukua käytetään konekäskyn yhteydessä, on käytössä 16 bittiä luvun ilmaisuun. Koska käytössä on myös negatiiviset luvut, lukualue on tällöin seuraava:
 
@@ -525,3 +525,135 @@ Esimerkiksi `LOAD R1, @PX` käskyä suorittaessa tapahtuu käskyjen nouto- ja su
 6. Ja sitten käsky suoritetaan: Rekisteriin R1 siirtyy TR:ssä oleva luku 1000.
 
 
+## Aliohjelmat
+
+### Aliohjelma arvoparametreilla
+
+Esimerkki aliohjelman kutsumisesta ja toteutuksesta. Tässä esimerkissä aliohjelmalle välitetään arvoparametrit aktivaatiotietueen avulla. Aktivaatiotietue on alue muistissa, jolla ratkaistaan aliohjelmien toteutus. Se toimii pinona. Pinoon talletetaan arvoja `PUSH` -konekäskyllä ja sieltä saadaan otettua arvoja `POP` -konekäskyllä.
+
+Toistaiseksi tässä materiaalissa on tämä esimerkki. Esimerkissä on kommentit jotka auttavat ymmärtämään miten aliohjelmien kutsu ja toteutus toimii. Tämä kannattaa kokeilla Titokoneella. On suositeltavaa, että muokkaat sitä haluamallasi tavalla niin opit paremmin. Voit esimerkiksi antaa aliohjelmalle lisää parametreja ja tehdä niillä jotain laskentaa aliohjelmassa.
+
+```
+; Tämä on .k91 -tiedosto, joka on käännettävissä Titokoneella.
+x dc 314                    ; Määritellään x muuttujaksi ja asetetaan sille alkuarvo 314.
+                            ; Huomaa, että tämä ei ole muodossa x dc =314, vaikka muutoin
+                            ;   käytetään merkkiä = kun esim. ladataan rekisteriin jokin luku
+                            ;   tähän tyyliin: load r1, =314.
+y dc 227                    ; Määritellään y muuttujaksi ja asetetaan sille alkuarvo 227
+        
+push sp, =0            ; varataan pinoon tilaa paluuarvolle
+push sp, x                  ; pushataan muistiosoitteessa x oleva arvo pinoon (arvoparametri)
+push sp, y                  ; pushataan muistiosoitteessa y oleva arvo pinoon (arvoparametri)
+        
+call sp, myLittleSuby       ; kutsutaan aliohjelmaa myLittleSuby
+                            ; call -käsky siirtää automaattisesti vanhan PC:n ja FP:n (R7:n) arvon pinoon
+
+pop sp, r1                  ; Aliohjelmasta on palattu. Popataan sp-pinon päällimmäinen arvo rekisteriin r1.
+                            ; Näin siis saatiin aliohjelman paluuarvo pääohjelmaan.
+        
+out r1, =crt                ; Tulostetaan se
+
+svc sp, =halt               ; Pääohjelman lopetus
+        
+; Aliohjelman toteutus
+; Varataan ensin tilaa muuttujille jotta on helpompi muistaa mitä on tekemässä.
+; Muuttujien nimeämisessä on muistettava että ne ovat globaaleja eli niiden tulee olla yksilöllisiä.
+; Jos siis käytät aliohjelmassa allaolevan sx:n paikalla x (jota käytetään pääohjelmassa), tulee ongelmia.
+            
+paluuarvo equ -4    
+sx equ -3            
+sy equ -2                   ; viimeisenä sp-pinoon laitettu arvo on kohdassa -2(fp) eli siis fp:n arvo - 2  
+                            ; fp-1 ja fp-0 eli kaksi ylintä ovat pääohjelman PC:tä ja FP:tä varten
+
+; Aliohjelma:
+MYLITTLESUBY pushr sp       ; pushr sp laittaa rekisterit r0-r6 (r6=sp) pinoon jotta
+                            ; voit käyttää vapaasti rekistereitä aliohjelmassa
+                      
+load r1, sx(fp)             ; Lataa r1:een osoitteessa fp-3 oleva arvo
+load r2, sy(fp)             ; Lataa r2:een osoitteessa fp-2 oleva arvo
+            
+mul r1, r2                  ; Tehdään pikku laskutoimitus r1 = r1 * r2 jotta tämä aliohjelma tekee edes jotain
+            
+store r1, paluuarvo(fp)     ; Nyt sp-pinossa on osoitteessa fp-4 aliohjelman paluuarvo
+popr sp                     ; Popataan pinosta siihen pushr sp:llä laitetut rekisterit
+exit sp, =2                 ; Palataan pääohjelmaan siten että 2 pinon päällimmäistä arvoa poistetaan pinosta 
+                            ; (nuo mitkä laitettiin push sp, x ja push sp, y aliohjelmaa kutsuttaessa.
+                            ; Pinon päällimmäisenä on nyt ennen aliohjelman kutsua ensiksi laitettu arvo eli kohdassa
+                            ; fp - 4 oleva arvo, jota aliohjelma on muuttanut
+          
+```
+
+
+### Aliohjelma viiteparametreilla
+
+Viiteparametreja käytettäessä aliohjelmalle välitetään muuttujan tai taulukon osoite. Muuttujan osoitteen välittämisen etuna on se, että aliohjelma voi lukea ja muuttaa annetun muuttujan arvoja. Taulukon osoitteen välittämisen hyöty on se, että aliohjelma voi lukea ja muuttaa taulukon sisältöä.
+
+
+```
+; Tämä on .k91 -tiedosto, joka on käännettävissä Titokoneella.
+x dc 42                     ; Määritellään x muuttujaksi ja asetetaan sille alkuarvo 42.
+                            ; Huomaa, että tämä ei ole muodossa x dc =42, vaikka muutoin
+                            ;   käytetään merkkiä = kun esim. ladataan rekisteriin jokin luku
+                            ;   tähän tyyliin: load r1, =42.
+        
+push sp, =x                 ; pushataan muuttujan x osoite pinoon (viiteparametri)
+
+y dc 33                     ; Koska aliohjelma on toteutettu siten, että siihen halutaan viiteparametrit,
+                            ;   alustetaan nyt muuttuja jota voi käyttää viiteparametrina.
+                            ;   Tällainen muuttujan alustus voidaan siis tehdä keskellä koodia. Sitä ei ole
+                            ;   pakko tehdä aivan lähdekoodin alussa. 
+
+push sp, =y                 ; pushataan muuttujan y osoite pinoon (viiteparametri)
+        
+call sp, SWAP               ; kutsutaan aliohjelmaa SWAP, joka vaihtaa x:n ja y:n arvot keskenään
+                            ; call -käsky siirtää automaattisesti vanhan PC:n ja FP:n (R7:n) arvon pinoon
+
+; Nyt tässä ei ole mitään erillistä paluuarvoa, sillä aliohjelma muutti suoraan 
+; viiteparametreina annettujen muuttujien arvoja. Paluuarvon välittämistä 
+; on käsitelty yllä olevassa esimerkissä.
+
+load r1, x                  ; Aliohjelmasta on palattu. Ladataan aliohjelman muuttama x:n arvo rekisteriin r1.
+load r2, y                  ; Ja samoin y:n arvo.
+        
+out r1, =crt                ; Tulostetaan x:n arvo, joka on nyt 33 eli entinen y:n arvo.
+out r2, =crt                ; Tulostetaan y:n arvo, joka on nyt 42 eli entinen x:n arvo.
+
+svc sp, =halt               ; Pääohjelman lopetus
+        
+; Aliohjelman toteutus
+; Varataan ensin tilaa muuttujille jotta on helpompi muistaa mitä on tekemässä.
+; Muuttujien nimeämisessä on muistettava että ne ovat globaaleja eli niiden tulee olla yksilöllisiä.
+; Jos siis käytät aliohjelmassa allaolevan sx:n paikalla x (jota käytetään pääohjelmassa), tulee ongelmia.
+
+; Aliohjelma swap vastaa korkean tason kielen komentoa public static void swap(Luku a, Luku b). 
+;   Se siis vaihtaa parametreina annettujen muuttujien arvot vähän samantyyppisesti kuin olioiden 
+;   sisäistä tilaa voidaan muuttaa Javassa. Tässä tapauksessa aliohjelmalle on annettava 
+;   parametreina muuttujien osoitteet (push sp, =muuttujannimi. Erillistä paluuarvoa ei nyt välitetä.
+
+sx equ -3            
+sy equ -2                   ; viimeisenä sp-pinoon laitettu arvo on kohdassa -2(fp) eli siis fp:n arvo - 2  
+                            ; fp-1 ja fp-0 eli kaksi ylintä ovat pääohjelman PC:tä ja FP:tä varten
+
+; Aliohjelma:
+SWAP pushr sp               ; pushr sp laittaa rekisterit r0-r6 (r6=sp) pinoon jotta
+                            ; voit käyttää vapaasti rekistereitä aliohjelmassa
+                      
+load r1, @sx(fp)            ; Lataa r1:een arvo, johon osoitteessa fp-3 oleva arvo viittaa
+load r2, @sy(fp)            ; Lataa r2:een arvo, johon osoitteessa fp-2 oleva arvo viittaa
+store r1, @sy(fp)           ; Talletetaan r1:stä arvo osoitteeseen johon sy(fp) eli fp-2 viittaa
+store r2, @sx(fp)           ; Talletetaan r2:sta arvo osoitteeseen johon sx(fp) eli fp-3 viittaa
+
+; Nyt voidaan lähteä pois aliohjelmasta. Viiteparametreina annettujen muuttujien arvot on vaihdettu.
+
+popr sp                     ; Poprataan pinosta siihen pushr sp:llä laitetut rekisterit. Tämä käsky
+                            ;   asettaa aliohjelmaa kutsuneen rutiinin rekisterien arvot takaisin.
+exit sp, =2                 ; Palataan pääohjelmaan. Käsky asettaa FP:n ja PC:n arvon ennalleen ja
+                            ;   poistaa pinosta 2 päällimmäistä arvoa, eli nuo mitkä laitettiin
+                            ;   push sp, =x ja push sp, =y käskyillä aliohjelmaa kutsuttaessa.
+                            ;   Pino-osoitin SP osoittaa nyt siihen mihin kuuluukin. Aliohjelmalle parametreina
+                            ;   annetut osoitteet eivät ole enää pinossa.
+                            ;   (Tarkalleen ottaen ne ovat edelleen muistissa siellä
+                            ;   mihin ne laitettiinkin, mutta niihin ei enää pääse
+                            ;   käsiksi POP -käskyllä.)
+          
+```
