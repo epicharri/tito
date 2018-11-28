@@ -531,7 +531,7 @@ Esimerkiksi `LOAD R1, @PX` käskyä suorittaessa tapahtuu käskyjen nouto- ja su
 
 Esimerkki aliohjelman kutsumisesta ja toteutuksesta. Tässä esimerkissä aliohjelmalle välitetään arvoparametrit aktivaatiotietueen avulla. Aktivaatiotietue on alue muistissa, jolla ratkaistaan aliohjelmien toteutus. Se toimii pinona. Pinoon talletetaan arvoja `PUSH` -konekäskyllä ja sieltä saadaan otettua arvoja `POP` -konekäskyllä.
 
-Toistaiseksi tässä materiaalissa on tämä esimerkki. Esimerkissä on kommentit jotka auttavat ymmärtämään miten aliohjelmien kutsu ja toteutus toimii. Tämä kannattaa kokeilla Titokoneella. On suositeltavaa, että muokkaat sitä haluamallasi tavalla niin opit paremmin. Voit esimerkiksi antaa aliohjelmalle lisää parametreja ja tehdä niillä jotain laskentaa aliohjelmassa.
+Esimerkissä on kommentit jotka auttavat ymmärtämään miten aliohjelmien kutsu ja toteutus toimii. Tämä kannattaa kokeilla Titokoneella. On suositeltavaa, että muokkaat sitä haluamallasi tavalla niin opit paremmin. Voit esimerkiksi antaa aliohjelmalle lisää parametreja ja tehdä niillä jotain laskentaa aliohjelmassa.
 
 ```
 ; Tämä on .k91 -tiedosto, joka on käännettävissä Titokoneella.
@@ -541,14 +541,15 @@ x dc 314                    ; Määritellään x muuttujaksi ja asetetaan sille 
                             ;   tähän tyyliin: load r1, =314.
 y dc 227                    ; Määritellään y muuttujaksi ja asetetaan sille alkuarvo 227
         
-push sp, =0            ; varataan pinoon tilaa paluuarvolle
+push sp, =0                 ; varataan pinoon tilaa paluuarvolle
 push sp, x                  ; pushataan muistiosoitteessa x oleva arvo pinoon (arvoparametri)
 push sp, y                  ; pushataan muistiosoitteessa y oleva arvo pinoon (arvoparametri)
         
 call sp, myLittleSuby       ; kutsutaan aliohjelmaa myLittleSuby
                             ; call -käsky siirtää automaattisesti vanhan PC:n ja FP:n (R7:n) arvon pinoon
 
-pop sp, r1                  ; Aliohjelmasta on palattu. Popataan sp-pinon päällimmäinen arvo rekisteriin r1.
+pop sp, r1                  ; Aliohjelmasta on palattu. Popataan sp-pinon päällimmäinen 
+                            ;   arvo rekisteriin r1.
                             ; Näin siis saatiin aliohjelman paluuarvo pääohjelmaan.
         
 out r1, =crt                ; Tulostetaan se
@@ -572,14 +573,17 @@ MYLITTLESUBY pushr sp       ; pushr sp laittaa rekisterit r0-r6 (r6=sp) pinoon j
 load r1, sx(fp)             ; Lataa r1:een osoitteessa fp-3 oleva arvo
 load r2, sy(fp)             ; Lataa r2:een osoitteessa fp-2 oleva arvo
             
-mul r1, r2                  ; Tehdään pikku laskutoimitus r1 = r1 * r2 jotta tämä aliohjelma tekee edes jotain
+mul r1, r2                  ; Tehdään pikku laskutoimitus r1 = r1 * r2 jotta tämä 
+                            ;   aliohjelma tekee edes jotain.
             
 store r1, paluuarvo(fp)     ; Nyt sp-pinossa on osoitteessa fp-4 aliohjelman paluuarvo
 popr sp                     ; Popataan pinosta siihen pushr sp:llä laitetut rekisterit
-exit sp, =2                 ; Palataan pääohjelmaan siten että 2 pinon päällimmäistä arvoa poistetaan pinosta 
-                            ; (nuo mitkä laitettiin push sp, x ja push sp, y aliohjelmaa kutsuttaessa.
-                            ; Pinon päällimmäisenä on nyt ennen aliohjelman kutsua ensiksi laitettu arvo eli kohdassa
-                            ; fp - 4 oleva arvo, jota aliohjelma on muuttanut
+exit sp, =2                 ; Palataan pääohjelmaan siten että 2 pinon päällimmäistä arvoa 
+                            ; poistetaan pinosta (nuo mitkä laitettiin push sp, x ja 
+                            ; push sp, y aliohjelmaa kutsuttaessa.
+                            ; Pinon päällimmäisenä on nyt ennen aliohjelman kutsua 
+                            ; ensiksi laitettu arvo eli kohdassa fp - 4 oleva arvo,
+                            ; jota aliohjelma on muuttanut.
           
 ```
 
@@ -600,8 +604,8 @@ push sp, =x                 ; pushataan muuttujan x osoite pinoon (viiteparametr
 
 y dc 33                     ; Koska aliohjelma on toteutettu siten, että siihen halutaan viiteparametrit,
                             ;   alustetaan nyt muuttuja jota voi käyttää viiteparametrina.
-                            ;   Tällainen muuttujan alustus voidaan siis tehdä keskellä koodia. Sitä ei ole
-                            ;   pakko tehdä aivan lähdekoodin alussa. 
+                            ;   Tällainen muuttujan alustus voidaan siis tehdä keskellä koodia.
+                            ;   Sitä ei ole pakko tehdä aivan lähdekoodin alussa. 
 
 push sp, =y                 ; pushataan muuttujan y osoite pinoon (viiteparametri)
         
@@ -650,8 +654,8 @@ popr sp                     ; Poprataan pinosta siihen pushr sp:llä laitetut re
 exit sp, =2                 ; Palataan pääohjelmaan. Käsky asettaa FP:n ja PC:n arvon ennalleen ja
                             ;   poistaa pinosta 2 päällimmäistä arvoa, eli nuo mitkä laitettiin
                             ;   push sp, =x ja push sp, =y käskyillä aliohjelmaa kutsuttaessa.
-                            ;   Pino-osoitin SP osoittaa nyt siihen mihin kuuluukin. Aliohjelmalle parametreina
-                            ;   annetut osoitteet eivät ole enää pinossa.
+                            ;   Pino-osoitin SP osoittaa nyt siihen mihin kuuluukin. Aliohjelmalle
+                            ;   parametreina annetut osoitteet eivät ole enää pinossa.
                             ;   (Tarkalleen ottaen ne ovat edelleen muistissa siellä
                             ;   mihin ne laitettiinkin, mutta niihin ei enää pääse
                             ;   käsiksi POP -käskyllä.)
