@@ -661,3 +661,77 @@ exit sp, =2                 ; Palataan pääohjelmaan. Käsky asettaa FP:n ja PC
                             ;   käsiksi POP -käskyllä.)
           
 ```
+
+
+## Esimerkki kevään 2018 kokeen aliohjelmatehtävästä
+
+### Tehtävänanto
+
+Funktio F(a, b) palauttaa arvonaan lausekkeen 2a+3b+1 arvon. 
+Esimerkiksi lausekkeen x = F(1,1) suorituksen jälkeen muuttujan x arvo on 6. 
+Parametri a on arvoparametri ja parametri b on viiteparametri. Muuttuja x on määritelty pääohjelmatasolla.
+
+i. [3 p] Toteuta ttk-91 symbolisella konekielellä (funktiota F kutsumalla) lauseke x = F(x, 3).
+
+ii. [4 p] Toteuta ttk-91 symbolisella konekielellä funktio F.
+
+Noudata suositusten mukaista aliohjelmien (funktioiden) kutsumekanismia.
+
+(Lähde: Tietokoneen toiminta -kurssin koe 7.5.2018., tehtävä 4 d. Kokeen laatinut Teemu Kerola.)
+
+
+### Malliratkaisu
+
+#### (i)
+
+Muuttuja x on tehtävänannon mukaan määritelty pääohjelmatasolla (eli ei aliohjelmassa). Sitä ei tarvitse siten tässä enää määritellä.
+Koska a on arvoparametri, välitetään aliohjelmalle sen arvo.
+Koska b on viiteparametri, välitetään aliohjelmalle sen osoite. 
+
+
+| Ohjelman koodi | Selite |
+| -------------- | --- |
+|`b dc 3`| Alustetaan muuttuja b ja annetaan sen arvoksi 3.|
+|`push sp, =0`| Varataan pinosta tilaa **paluuarvoa** varten puskemalla pinoon joku luku.|
+|`push sp, x`| Pusketaan pinoon x:n arvo, eli aliohjelman (funktion) F ensimmäinen parametri.<br>Välitettiin **arvo**, koska ensimmäinen parametri on **arvoparametri.**|
+|`push sp, =b`| Pusketaan pinoon muuttujan b **osoite**, eli aliohjelman (funktion) F toisen parametrin osoite.<br>Osoite on **viite muuttujaan**. Käytettiin siis **viiteparametria**.|
+|`call sp, F`| Kutsutaan aliohjelmaa F |
+|`pop sp, r1`| Popataan pinosta aliohjelman sinne laskema arvo.|
+|`store r1, x`| Talletaan se arvo muuttujan x arvoksi eli osoitteeseen x.|
+
+Valmista! Nyt x = F(x,3).
+
+
+#### (ii)
+
+Toteutetaan funktio F(a,b) = 2a + 3b + 1.
+Esimerkki mitä funktion kuuluu palauttaa. Olkoon a=10 ja b=5. Tällöin F(a,b) = F(10,5) = 2\*10 + 3\*5 + 1 = 20+15+1 = 36.
+
+Ohjelman koodi | Selite
+-------------- | ---
+`paluuarvo equ -4` | Paluuarvon sijainti suhteessa rekisteriin FP on -4.
+`arvoA equ -3` | Ensimmäisen parametrin sijainti suhteessa rekisteriin FP on -3.
+`viiteB equ -2` | Toisen parametrin sijainti suhteessa rekisteriin FP on -2.
+| | Yllä on määritelty vakiot auttamaan viittaamisessa. Alla on varsinainen aliohjelma.
+`F pushr sp` | Aliohjelma alkaa. Aliohjelman nimi **F** määritellään tässä.<br> Rivillä on oltava koodia. PUSHR SP Tallettaa rekisterit talteen.
+`load r1, arvoA(fp)` | Ladataan r1:een ensimmäisen parametrin arvo.
+`load r2, @viiteB(fp)` | Ladataan r2:een toisen parametrin osoittama arvo.
+`mul r1, =2` | r1 = 2a
+`mul r2, =3` | r2 = 3b
+`add r1, r2` | r1 = r1 + r2 = 2a + 3b
+`add r1, =1` | r1 = r1 + 1, joten nyt rekisterissä r1 on 2a+3b+1
+`store r1,   paluuarvo(fp)` | Talletetaan palautettava arvo pinoon kohtaan paluuarvo + fp.<br>Tätä merkitään koodissa paluuarvo(fp).<br>Vakion paluuarvo arvo on -4, joten tämän voisi kirjoittaa myös -4(fp).
+`popr sp` | Palautetaan rekisterien arvot, jotka oli pushrattu aliohjelman alussa.
+`exit sp, =2` | Poistetaan 2 ylintä arvoa pinosta, jolloin ylimpänä on paluuarvo, ja poistutaan aliohjelmasta.
+
+Valmista :relaxed: :tada:
+
+>Huomaa, että parametrien sijainnin numerointi alkaa -2:sta, koska kohdissa -1 ja 0 on vanha PC ja vanha FP.
+>Huomaa, että nämä equ-vakiot eivät saa olla nimetty samoilla nimillä kuin muualla koodissa!!!
+
+(Lähde: Tietokoneen toiminta -kurssin 7.5.2018., tehtävän 4 d malliratkaisu. Malliratkaisun laatinut Harri Kähkönen.)
+
+                        
+
+
+
