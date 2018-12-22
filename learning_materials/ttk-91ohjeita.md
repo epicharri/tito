@@ -72,7 +72,7 @@ Kun ohjelma lukee käyttäjän syötteen operaatiolla `IN` tai kun määritellä
 Kun kokonaislukua käytetään konekäskyn yhteydessä, on käytössä 16 bittiä luvun ilmaisuun. Koska käytössä on myös negatiiviset luvut, lukualue on tällöin seuraava:
 
 * Pienin kokonaisluku on - 2^15 = -32768
-* Suurin kokonaisluku on 2^15 = 32767
+* Suurin kokonaisluku on 2^15 - 1 = 32767
 
 #### Konekäskyn binääriesitys
 
