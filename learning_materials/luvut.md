@@ -17,7 +17,7 @@
 * Seuraavaksi vaihdetaan tavujärjestys käänteiseen Little Endian -muotoon luvulle +20:
 * Saadaan `0001 0100  0000 0000  0000 0000  0000 0000` tai heksadesimaalimuodossa `0x14000000`.
 * Ja vastaavasti vaihdetaan tavujärjestys käänteiseen Little Endian -muotoon luvulle -20:
-* Saadaan `0001 0100  0000 0000  0000 0000  1000 0000` tai heksadesimaalimuodossa `14000080`.
+* Saadaan `0001 0100  0000 0000  0000 0000  1000 0000` tai heksadesimaalimuodossa `0x14000080`. Kannattaa erityisesti huomata, että etumerkillisessä Little Endian -muodossa etumerkin ilmaisee edelleenkin eniten merkitsevän tavun (oikeanpuoleisimman tavun) ensimmäinen bitti.
 
 
 </details>
