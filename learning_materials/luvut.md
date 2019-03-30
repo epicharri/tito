@@ -200,7 +200,7 @@ iv. Oletetaan nyt, että satunnainen alkeishiukkanen kääntää (muuttaa) yhden
 #### Ratkaisu
 Kun tietoa luetaan muistista, muistipiiri yrittää korjata tiedon ennen sen lähettämistä muistiväylää pitkin eteenpäin.
 
-Virheellisen bitin sijainti saadaan selville pariteettibittien avulla: P1 on määritelty suojaamaan yhtä bittiä (itsensä mukaanlukien), ohittamaan yhden bitin, suojaamaan yhden bitin, ohittamaan yhden bitin ja niin edelleen, eli bitit 1, 3, 5, ..., 136. P2 vastaavasti on suojaamassa kahta bittiä, ohittamassa kaksi ja niin edelleen, eli bitit 2, 3, 6, 7, ... Niiden pariteettibittien järjestysnumeroiden summa, joiden suojaamien bittien pariteetti (ykkösten määrän parillisuus, jos kyse parillisesta pariteetista), on muuttunut, osoittaa mikä bitti on vaihtunut. Muistipiiri vaihtaa kääntyneen bitin, tarkistaa onko kaikkien bittien ykkösten määrä se mikä pitääkin, ja koska tässä tapauksessa on (vain yksi bitti kääntynyt), tieto on valmis lähetettäväksi muistiväylälle. 
+Virheellisen bitin sijainti saadaan selville pariteettibittien avulla: P1 on määritelty suojaamaan yhtä bittiä (itsensä mukaanlukien), ohittamaan yhden bitin, suojaamaan yhden bitin, ohittamaan yhden bitin ja niin edelleen, eli bitit 1, 3, 5, ..., 135. P2 vastaavasti on suojaamassa kahta bittiä, ohittamassa kaksi ja niin edelleen, eli bitit 2, 3, 6, 7, ... Niiden pariteettibittien järjestysnumeroiden summa, joiden suojaamien bittien pariteetti (ykkösten määrän parillisuus, jos kyse parillisesta pariteetista), on muuttunut, osoittaa mikä bitti on vaihtunut. Muistipiiri vaihtaa kääntyneen bitin, tarkistaa onko kaikkien bittien ykkösten määrä se mikä pitääkin, ja koska tässä tapauksessa on (vain yksi bitti kääntynyt), tieto on valmis lähetettäväksi muistiväylälle. 
 
 </details>
 
