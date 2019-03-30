@@ -72,7 +72,22 @@ Big Endian kahden komplementin esitysmuodossa oleva positiivinen luku on valmiik
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-Ratkaisua ei ole vielä lisätty.
+Oikea vastaus on `1 1000 0010 0000 1000 0000 0000 0000 000`.
+
+IEEE:n 32-bitin liukulukustandardissa liukuluku muodostuu merkistä eli +/- (1 bitti), eksponentista vakiolisäysmuodossa (8 bittiä) ja mantissasta (23 bittiä).
+
+* Merkki on -, joten ensimmäinen bitti on 1.
+* Muunnetaan 8,25 binaariluvuksi. Luku 8 on `1000` ja 0,25 eli 1/4 on `.01`. Saadaan `1000.01`.
+  * 8,25 = 1\*8 + 0\*4 + 0\*2 + 0\*1 + 0\*0,5 + 1\*0,25
+* Muutetaan luku muotoon jossa ensimmäinen numero vasemmalta lukien on 1:
+  * `1000.01 = 1.00001 * 2^3`.
+  * Pistettä siirrettiin 3 numeroa vasemmalle, joten eksponentti on 3.
+  * (Tämä on vastaavaa kuin kymmenkantaisessa järjestelmässä se, että 1729,25 = 1,72925 * 10^3.)
+* IEEE-liukulukustandardissa oletetaan, että luku on siinä muodossa, että ensimmäinen bitti on 1, joten sitä ei tarvitse tallettaa! Siispä saamme mantissaksi pisteen oikeanpuoleiset luvut lisättynä riittävällä määrällä nollia, eli `0000 1000 0000 0000 0000 000`.
+* Eksponentti on ilmaistava vakiolisäys 127 muodossa. 3 + 127 = 130, joka on 8-bittisenä binäärilukuna `1000 0010`.
+* Lopuksi yhdistetään merkki, eksponentti vakiolisäysmuodossa ja mantissa ja saadaan lopullinen vastaus `1 1000 0010 0000 1000 0000 0000 0000 000`.
+* Jos vielä halutaan, voidaan ryhmitellä luku puolitavun (4 bitin) osiin, josta se on kätevä muuttaa heksadesimaaliksi: `1100 0001 0000 0100 0000 0000 0000 0000`, josta saadaan `0xC1040000`. Käänteisesti muutos tehdään vastaavasti. Jos olisi annettuna heksadesimaaliluku `0xC1040000`, sen muuntaminen binääriluvuksi on suoraviivaista, onhan `0xC = 0b1100, 0x1 = 0b0001, 0x0 = 0b0000, 0x4 = 0b0100`.
+
 
 </details>
 
