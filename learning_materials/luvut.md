@@ -61,7 +61,7 @@ Big Endian kahden komplementin esitysmuodossa oleva positiivinen luku on valmiik
 #### Ratkaisu
 * Saadaan ilmaistua yksikäsitteisesti luvut välillä -127 ... +128, eli puolet ei-positiivisia ja puolet positiivisia lukuja
 * Lukujen järjestys vakiolisäys-esitysmuodossa on sama kuin lukujen todellinen järjestys.
-  * Esimerkki: Luku -127 + vakiolisäys 127 = 0 ja luku -128 + vakiolisäys 127 = 1.
+  * Esimerkki: Luku -127 + vakiolisäys 127 = 0 ja luku -126 + vakiolisäys 127 = 1.
   * Esimerkki: Luku -1 + vakiolisäys 127 = 126 ja luku 0 + vakiolisäys 127 = 127.
 
 </details>
