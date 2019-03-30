@@ -92,14 +92,62 @@ IEEE:n 32-bitin liukulukustandardissa liukuluku muodostuu merkistä eli +/- (1 b
 </details>
 
 
-### f) Kaukokirjoittimen (teleprinter, telex) ASCII-koodissa on 7-bittinen merkkikoodisto. Telexiä käytetään edelleen, mutta nykyään merkit yleensä koodataan 8-bittisiin tavuihin. Tuon ylimääräisen bitin voisi käyttää pariteettibittinä. Mitä etua tästä saataisiin? Mitä kustannuksia siitä tulisi? Kuinka pariteettibitin arvo asetetaan? Kuinka pariteettibittiä käytettäisiin tässä tapauksessa? Kuka sen asettaisi ja kuinka sitä käytettäisiin tiedon eheyden tarkistamiseen? Mitä tapahtuu, jos järjestelmä havaitsee pariteettivirheen? 
+### f) Kaukokirjoittimen (teleprinter, telex) ASCII-koodissa on 7-bittinen merkkikoodisto. Telexiä käytetään edelleen, mutta nykyään merkit yleensä koodataan 8-bittisiin tavuihin. Tuon ylimääräisen bitin voisi käyttää pariteettibittinä. Mitä etua tästä saataisiin?
+
 <details>
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-Ratkaisua ei ole vielä lisätty.
+Paritettibitin avulla pyrittäisiin tarkistamaan tiedonsiirron eheyttä, eli onko tieto pysynyt samana lähettäjältä vastaanottajalle. 
 
 </details>
+
+#### f jatkuu) Mitä kustannuksia siitä tulisi? 
+
+<details>
+  <summary>Katso vastaus klikkaamalla.</summary>
+
+#### Ratkaisu
+Telex-laitteisiin tulisi tehdä vähintään ohjelmistomuutoksia ja mahdollisesti laitteita joutuisi uusimaan. 
+
+</details>
+
+
+#### f jatkuu) Kuinka pariteettibitin arvo asetetaan? 
+
+<details>
+  <summary>Katso vastaus klikkaamalla.</summary>
+
+#### Ratkaisu
+* Parillinen pariteetti: lasketaan 7 bitin ykkösten määrä. Jos se on pariton, asetetaan pariteettibitiksi 1. Jos se on parillinen, asetetaan pariteettibitiksi 0.
+* Pariton pariteetti: lasketaan 7 bitin ykkösten määrä. Jos se on pariton, asetetaan pariteettibitiksi 0. Jos se on parillinen, asetetaan pariteettibitiksi 1.
+Olisi järkevintä valita vain toinen näistä, esimerkiksi parillinen pariteetti, jota kaikki laitteet käyttäisivät. Muutoin on lisäksi ilmoitettava jokaisessa viestissä kumpaa pariteettia käytetään.
+
+</details>
+
+
+#### f jatkuu) Kuinka pariteettibittiä käytettäisiin tässä tapauksessa? Kuka sen asettaisi ja kuinka sitä käytettäisiin tiedon eheyden tarkistamiseen? 
+
+<details>
+  <summary>Katso vastaus klikkaamalla.</summary>
+
+#### Ratkaisu
+Pariteettibitin asettaisi lähettävä laite joko laitteistotasolla tai ohjelmistotasolla. Vastaanottava laite tarkistaa onko ykkösiä valitun pariteetin mukaisesti. Jos käytössä on parillinen pariteetti, vastaanottava laite tarkistaa onko ykkösiä tavussa (8 bitissä) parillinen määrä.
+
+Pariteettibitin avulla ei kuitenkaan havaita virhettä, jos parillinen määrä bittejä muuttaa arvonsa lähetyksen aikana: ykkösten määrän parillisuuteen vaikuttaa vain jos pariton määrä bittejä vaihtaa arvonsa.
+
+</details>
+
+#### f jatkuu) Mitä tapahtuu, jos järjestelmä havaitsee pariteettivirheen? 
+
+<details>
+  <summary>Katso vastaus klikkaamalla.</summary>
+
+#### Ratkaisu
+Riippuu mitä haluttaisiin tapahtuvan. Virhettä ei saada korjattua, sillä järjestelmä ei tiedä mikä biteistä on vaihtunut. Esimerkiksi siinä voisi tehdä niin, että järjestelmä ilmoittaisi virheestä jollakin tavalla ja ehkä myös pyytäisi uudelleenlähetystä.
+
+</details>
+
 
 
 ### g) ECC muisti (Error-correcting code memory) tallettaa datan 128 bitin (16 tavua) lohkoina. Lohkot on suojattu muistissa Hamming-koodilla, joka korjaa kaikki 1 bitin virheet ja havaitsee kaikki 2 bitin virheet.
