@@ -88,6 +88,7 @@ IEEE:n 32-bitin liukulukustandardissa liukuluku muodostuu merkistä eli +/- (1 b
 * Lopuksi yhdistetään merkki, eksponentti vakiolisäysmuodossa ja mantissa ja saadaan lopullinen vastaus `1 1000 0010 0000 1000 0000 0000 0000 000`.
 * Jos vielä halutaan, voidaan ryhmitellä luku puolitavun (4 bitin) osiin, josta se on kätevä muuttaa heksadesimaaliksi: `1100 0001 0000 0100 0000 0000 0000 0000`, josta saadaan `0xC1040000`. Käänteisesti muutos tehdään vastaavasti. Jos olisi annettuna heksadesimaaliluku `0xC1040000`, sen muuntaminen binääriluvuksi on suoraviivaista, onhan `0xC = 0b1100, 0x1 = 0b0001, 0x0 = 0b0000, 0x4 = 0b0100`.
 
+Lisätietoa liukulukumuunnoksista on [täällä.](liukuluvut.md)
 
 </details>
 
