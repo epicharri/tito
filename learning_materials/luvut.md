@@ -15,9 +15,9 @@
 * Big Endian etumerkillisessä esitysmuodossa ensimmäinen bitti vasemmalta ilmaisee merkin. + on 0 ja - on 1. Vaihdetaan nyt merkki lukua -20 varten:
 * Saadaan `1000 0000  0000 0000  0000 0000  0001 0100`, joka on nyt luku -20 luontaisessa Big Endian -esitysmuodossa.
 * Seuraavaksi vaihdetaan tavujärjestys käänteiseen Little Endian -muotoon luvulle +20:
-* Saadaan `0001 0100  0000 0000  0000 0000  0000 0000`.
+* Saadaan `0001 0100  0000 0000  0000 0000  0000 0000` tai heksadesimaalimuodossa `0x14000000`.
 * Ja vastaavasti vaihdetaan tavujärjestys käänteiseen Little Endian -muotoon luvulle -20:
-* Saadaan `0001 0100  0000 0000  0000 0000  1000 0000` 
+* Saadaan `0001 0100  0000 0000  0000 0000  1000 0000` tai heksadesimaalimuodossa `14000080`.
 
 
 </details>
@@ -28,7 +28,14 @@
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-Ratkaisua ei ole vielä lisätty.
+Tehtävässä a on jo kokonaisluku +20 muutettu Big-Endian 32-bittiseksi kokonaisluvuksi `0000 0000  0000 0000  0000 0000  0001 0100`.
+
+Big Endian kahden komplementin esitysmuodossa oleva positiivinen luku on valmiiksi oikeassa muodossaan. Määritellään siis enää luvun +20 vastaluku -20:
+
+* Otetaan luvusta `0000 0000  0000 0000  0000 0000  0001 0100` ensin komplementti kääntämällä bitit (eli 0 -> 1 ja 1 -> 0).
+* Saadaan `1111 1111  1111 1111  1111 1111 1110 1011`.
+* Lisätään luku `1`.
+* Saadaan `1111 1111  1111 1111  1111 1111 1110 1100`, joka on luku -20 Big Endian kahden komplementin esitysmuodossa.
 
 </details>
 
@@ -39,7 +46,10 @@ Ratkaisua ei ole vielä lisätty.
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-Ratkaisua ei ole vielä lisätty.
+* Luku -20: Luku 20 muutettuna binäärilukumuotoon eli `0001 0100`.
+* Luku +20: Luku 20 + vakiolisäys 127 = 147 muutettuna binäärilukumuotoon eli `1001 0011`.
+
+* Vakiolisäys -esitystavassakin merkitsevimmän tavun (tässä vain yksi tavu) ensimmäisestä bitistä näkee minkä merkkinen luku on, mutta toisin kuin muissa esitystavoissa, 0 on negatiiviset luvut ja 1 positiiviset luvut. __Luku -20 on siis luku 20 eli `0001 0100` vakiolisäys 127 -esitysmuodossa!__
 
 </details>
 
@@ -53,8 +63,7 @@ Ratkaisua ei ole vielä lisätty.
 </details>
 
 
-### e) Mikä on IEEE liukulukustandardin mukainen 32-bittinen normalisoitu Big-Endian esitysmuoto
-liukuluvulle -8.25?
+### e) Mikä on IEEE liukulukustandardin mukainen 32-bittinen normalisoitu Big-Endian esitysmuoto liukuluvulle -8.25?
 <details>
   <summary>Katso vastaus klikkaamalla.</summary>
 
