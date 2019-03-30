@@ -157,17 +157,27 @@ i. Montako ylimääräistä bittiä tarvitaan? Selitä?
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-Ratkaisua ei ole vielä lisätty.
+9 bittiä.
+
+Tavallisella Hamming-koodilla voi havaita ja korjata yhden bitin virheen mutta se ei havaitse kahden bitin virhettä.
+
+Tavallista Hamming-koodia varten tarvitaan 8 bittiä ja lisäksi 1 pariteettibitti koko datan ja kaikkien pariteettibittien suojaamiseen. Näin voidaan korjata yhden bitin virhe ja saada tarkistettua ylimääräisen pariteettibitin avulla onko korjauksen jälkeen pariteetti säilynyt haluttuna (ykkösten määrä pysynyt parillisena, jos kyse parillisesta pariteetista). Jos ei ole säilynyt, on löydetty kahden bitin virhe.
+
+Pariteettibitit ovat järjestysnumeroiltaan 2:n potensseja eli P1, P2, P4, P8, P16, P32, P64 ja P128. Lisäksi kaikkien bittien pariteetin säilymistä (ykkösten määrän parillisuuden säilymistä, jos käytössä on parillinen pariteetti), tarvitaan yksi pariteettibitti P0.
 
 </details>
 
 
-ii. Kuka asettaa nämä ylimääriset bitit ja miten? Kuka tarkistaa niiden arvot ja milloin? 
+ii. Kuka asettaa nämä ylimääräiset bitit ja miten? Kuka tarkistaa niiden arvot ja milloin? 
 <details>
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-Ratkaisua ei ole vielä lisätty.
+Koska kyse on virheenkorjaava muisti, muistipiiri asettaa nämä ylimääräiset bitit kun tietoa talletetaan muistiin. Vastaavasti tietoa muistista luettaessa muistipiiri tarkistaa onko tieto muuttunut.
+
+Pariteettibitit P1, P2, ..., P128 asetetaan seuraavasti: 128 databitin sekaan asetetaan pariteettibitit järjestysnumeronsa mukaiseen paikkaan, siis P1 ensimmäiseksi oikealle, P2 toiseksi oikealta, databitti 1 kolmanneksi oikealta ja niin edelleen. Lisäksi P0 -bitti asetetaan esimerkiksi äärimmäiseksi oikealle. Itse laitteessa tämä tehdään ylimääräisin johtimin.
+
+Lisäksi laitteistossa voi olla erikseen muistiväylän läpi kuljetetun tiedon suojaus Hamming-koodilla ylimääräisin johtimin, jolloin muistista suorittimelle lähetetty tieto voidaan tarkistaa ja mahdollisesti korjata suorittimen puolella, ja vastaavasti suorittimelta muistille lähetetty tieto. 
 
 </details>
 
@@ -177,7 +187,7 @@ iii. Tehdäänkö Hamming-koodin laskenta laitteistolla vai ohjelmistolla? Selit
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-Ratkaisua ei ole vielä lisätty.
+Laitteistolla. Ohjelmistototeutus vaatisi useamman konekäskyn ja hidastaisi kohtuuttomasti muistin käyttöä. Yleisesti ottaen prosessorissa ja sen lähellä muistissa ja muistiväylällä tiedon eheydyn suojaaminen hoidetaan laittteistototeutuksena nopeuden ja toimintavarmuuden takia.
 
 </details>
 
@@ -187,15 +197,17 @@ iv. Oletetaan nyt, että satunnainen alkeishiukkanen kääntää (muuttaa) yhden
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-Ratkaisua ei ole vielä lisätty.
+Kun tietoa luetaan muistista, muistipiiri yrittää korjata tiedon ennen sen lähettämistä muistiväylää pitkin eteenpäin.
+
+Virheellisen bitin sijainti saadaan selville pariteettibittien avulla: P1 on määritelty suojaamaan yhtä bittiä (itsensä mukaanlukien), ohittamaan yhden bitin, suojaamaan yhden bitin, ohittamaan yhden bitin ja niin edelleen, eli bitit 1, 3, 5, ..., 136. P2 vastaavasti on suojaamassa kahta bittiä, ohittamassa kaksi ja niin edelleen, eli bitit 2, 3, 6, 7, ... Niiden pariteettibittien järjestysnumeroiden summa, joiden suojaamien bittien pariteetti (ykkösten määrän parillisuus, jos kyse parillisesta pariteetista), on muuttunut, osoittaa mikä bitti on vaihtunut. Muistipiiri vaihtaa kääntyneen bitin, tarkistaa onko kaikkien bittien ykkösten määrä se mikä pitääkin, ja koska tässä tapauksessa on (vain yksi bitti kääntynyt), tieto on valmis lähetettäväksi muistiväylälle. 
 
 </details>
 
 
-Ratkaisut selityksineen laatinut Harri Kähkönen.
 
 
 Lähteet
 1. Kerola, Teemu. Tietokoneen toiminta -kurssin minikoe 2, 19.11.2018. Luettu 30.3.2019 https://www.cs.helsinki.fi/group/nodes/kurssit/tito/kokeet/2018/2018_11_19_mk2.pdf
 
 
+Ratkaisut selityksineen on laatinut Harri Kähkönen 30.3.2019.
