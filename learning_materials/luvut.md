@@ -46,10 +46,10 @@ Big Endian kahden komplementin esitysmuodossa oleva positiivinen luku on valmiik
   <summary>Katso vastaus klikkaamalla.</summary>
 
 #### Ratkaisu
-* Luku -20: Luku 20 muutettuna binäärilukumuotoon eli `0001 0100`.
+* Luku -20: Lisätään lukuun -20 vakiolisäys 127 ja saadaan 107, joka on binäärilukuna `0110 1011`.
 * Luku +20: Luku 20 + vakiolisäys 127 = 147 muutettuna binäärilukumuotoon eli `1001 0011`.
 
-* Vakiolisäys -esitystavassakin merkitsevimmän tavun (tässä vain yksi tavu) ensimmäisestä bitistä näkee minkä merkkinen luku on, mutta toisin kuin muissa esitystavoissa, 0 on negatiiviset luvut ja 1 positiiviset luvut. __Luku -20 on siis luku 20 eli `0001 0100` vakiolisäys 127 -esitysmuodossa!__
+* Vakiolisäys -esitystavassakin merkitsevimmän tavun (tässä vain yksi tavu) ensimmäisestä bitistä näkee minkä merkkinen luku on, mutta toisin kuin muissa esitystavoissa, 0 on negatiiviset luvut ja 1 positiiviset luvut.
 
 </details>
 
@@ -58,7 +58,11 @@ Big Endian kahden komplementin esitysmuodossa oleva positiivinen luku on valmiik
 <details>
   <summary>Katso vastaus klikkaamalla.</summary>
 
-### Ratkaisu
+#### Ratkaisu
+* Saadaan ilmaistua yksikäsitteisesti luvut välillä -127 ... +128, eli puolet ei-positiivisia ja puolet positiivisia lukuja
+* Lukujen järjestys vakiolisäys-esitysmuodossa on sama kuin lukujen todellinen järjestys.
+  * Esimerkki: Luku -127 + vakiolisäys 127 = 0 ja luku -128 + vakiolisäys 127 = 1.
+  * Esimerkki: Luku -1 + vakiolisäys 127 = 126 ja luku 0 + vakiolisäys 127 = 127.
 
 </details>
 
