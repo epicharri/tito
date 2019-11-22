@@ -197,7 +197,9 @@ LOAD R1, =3             ; Ladataan rekisteriin R1 jokin arvo, tässä tapauksess
 STORE R1, PERSON(R2)    ; Tämä käsky tallettaa (STORE) rekisterin R1 sisällön 
                         ;   muistiosoitteeseen, joka saadaan laskemalla yhteen
                         ;   indeksirekisterin R2 arvo ja PERSON -taulukon osoite.
-                        ;   Kun R2=3, tallennus tapahtui PERSON-taulukon indeksiin 3.
+                        ;   Alussa on asetettu, että R2=0, joten tallennus tapahtui osoitteeseen
+                        ;     PERSON+R2 eli PERSON-taulukon indeksiin 0.
+                        ;   Jos esim. R2=2, tallennus tapahtuu PERSON-taulukon indeksiin 2.
                       
 
 ```
@@ -406,7 +408,11 @@ Anna      IN R2, =KBD           ; R2 = näppäimistöltä luettu luku.
           JLES Anna             ; Jos R1<10, hyppää kohtaan Anna
 
 Elsa      JZER R1, LetItGo      ; Jos R1 == 0 (yhtään lukua ei ole annettu),
-                                ;   hypätään kohtaan LetItGo
+                                ;   hypätään kohtaan LetItGo. Jos R1 ei ole 0,
+                                ;   R1 on positiivinen, koska R1:n arvoa on
+                                ;   kasvatettu koodissa. Näin ollen ei tarvitse
+                                ;   hypätä mihinkään, vaan sen sijaan jatketaan
+                                ;   suoritusta alta seuraavasta konekäskystä.
 
 
           ; Tulostetaan luvut viimeksi annetusta alkaen:
