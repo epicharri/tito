@@ -533,9 +533,55 @@ Esimerkiksi `LOAD R1, @PX` käskyä suorittaessa tapahtuu käskyjen nouto- ja su
 
 ## Aliohjelmat
 
+### Yleisesti aliohjelman rakenteesta
+
+Käydään tässä ensiksi läpi parametrien välittäminen aliohjelmalle ja aliohjelman toteuttamisen runko ja syvennytään asiaan tarkemmin alempana. Aliohjelmien kutsumisessa ja toteutuksessa on tärkeää, että parametreja luetaan aliohjelmassa oikeassa järjestyksessä. Tässä esimerkissä välitetään aliohjelmalle sekä viiteparametri (muuttujan tai taulukon osoite) että arvoparametreja (lukuja). Seuraavassa koodissa kutsutaan aliohjelmaa ALUSTA, joka alustaa sille parametrina annetun taulukon arvolla, joka annetaan sille parametrina. Taulukkoa käsiteltäessä on annettava myös taulukon koko, sillä taulukko ei tiedä omaa kokoaan (toisin kuin Javassa jossa taulukon koon saa selville length-metodilla).
+
+```
+taulukko ds 20
+koko dc 20
+arvo dc 1729
+
+push sp, =taulukko
+push sp, koko
+push sp, arvo
+call sp, alusta
+
+svc sp, =halt
+```
+
+Parametrien lukemista helpottamaan luo EQU-vakiot SAMASSA JÄRJESTYKSESSÄ KUIN OLET PUSKENUT NE PINOON, ja numeroi ne siten että alin on -2, toiseksi alin -3 jne, näin:
+
+```
+aliTaulukko EQU -4
+aliKoko EQU -3
+aliArvo EQU -2
+```
+
+Yllä määritellyt luvut kertovat, mikä on parametreina annettujen viitteiden (osoitteiden) ja arvojen (lukujen) sijainti kehysosoittimen (FP, Frame Pointer) arvosta laskettuna. Yllä oleva `call sp, alusta` -konekäsky asettaa pinoon PC:n ja FP:n arvon, asettaa uudeksi FP:n arvoksi pino-osoittimen SP arvon ja asettaa PC:n arvoksi alusta -aliohjelman osoitteen. Varsinaisesti ohjelmoidessa ei tarvitse edes järkeillä, miksi nuo EQU-määrittelyt asetetaan juuri noin suhteessa Frame Pointeriin: riittää muistaa, että nuo EQU -määrittelyt pitää kirjata samassa järjestyksessä kuin parametrit on puskettu pinoon ja numeroida ne juuri tuolla tavalla. Vakioiden nimeämisessä kannattaa käyttää jotain lisäkirjainta tai sanaa, joka erottaa ne pääohjelman nimistä. Ne eivät siis saa olla samat. Yllä eriävä nimeäminen on tehty kirjoittamalla eteen sana ali.
+
+Aliohjelman toteuttamisessa perusrunko on seuraava:
+
+```
+ALUSTA pushr sp
+  ; Tähän kohtaan kirjoitetaan koodi taulukon alustukseen hyödyntäen
+  ;   taulukon alkuosoitetta, kokoa ja arvoa jolla halutaan taulukko alustaa.
+  ;   Nyt esimerkiksi taulukon osoitteen saa ladattua käskyllä 
+  ;   LOAD R1, aliTaulukko(fp), koon käskyllä LOAD R2, aliKoko(fp) ja arvon
+  ;   käskyllä LOAD R3, aliArvo(fp). 
+popr sp
+exit sp, =3
+```
+
+Siis ensiksi kirjoitetaan aliohjelman nimi ja sille riville `pushr sp`, joka tallettaa rekisterit R0 - R6 talteen pinoon. Toiseksi sitten tehdään mitä aliohjelman pitää tehdä. Lopuksi `popr sp` palauttaa rekisterien arvot ja `exit sp, =3` -käsky hoitaa poistumisen aliohjelmasta. Tässä aliohjelmassa ei palauteta mitään arvoa, joten exitissä “poistetaan pinosta” kaikki 3 parametria. Jos paluuarvo tai paluuarvoja pitäisi palauttaa, silloin pinoon olisi ensin puskettu joku arvo paluuarvoa varten ensimmäisenä (mikä vain arvo, vaikkapa 0), ja exit -käskyssä olisi sitten vähemmän pinosta poistettavaa. Tästä on alempana esimerkki.
+
+Kun aliohjelman kutsu tehdään oikein ja aliohjelman runko on oikein, pääsee jo aika pitkälle. Seuraavaksi esitellään miten aliohjelma voi lukea ja muuten hyödyntää noita pinoon puskettuja parametreja.
+
+
+
 ### Aliohjelma arvoparametreilla
 
-Esimerkki aliohjelman kutsumisesta ja toteutuksesta. Tässä esimerkissä aliohjelmalle välitetään arvoparametrit aktivaatiotietueen avulla. Aktivaatiotietue on alue muistissa, jolla ratkaistaan aliohjelmien toteutus. Se toimii pinona. Pinoon talletetaan arvoja `PUSH` -konekäskyllä ja sieltä saadaan otettua arvoja `POP` -konekäskyllä.
+Esimerkki aliohjelman kutsumisesta ja toteutuksesta. Tässä esimerkissä aliohjelmalle välitetään arvoparametrit aktivaatiotietueen avulla. Aktivaatiotietue on alue muistissa, jolla ratkaistaan aliohjelmien toteutus. Se toimii pinona. Pinoon talletetaan arvoja `PUSH` -käskyllä ja sieltä saadaan otettua arvoja `POP` -käskyllä.
 
 Esimerkissä on kommentit jotka auttavat ymmärtämään miten aliohjelmien kutsu ja toteutus toimii. Tämä kannattaa kokeilla Titokoneella. On suositeltavaa, että muokkaat sitä haluamallasi tavalla niin opit paremmin. Voit esimerkiksi antaa aliohjelmalle lisää parametreja ja tehdä niillä jotain laskentaa aliohjelmassa.
 
