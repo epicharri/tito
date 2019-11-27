@@ -204,6 +204,28 @@ STORE R1, PERSON(R2)    ; Tämä käsky tallettaa (STORE) rekisterin R1 sisäll�
 
 ```
 
+#### Taulukon alustaminen
+
+Havainnollistetaan indeksirekisterin käyttöä taulukon alustaminseen. Seuraavassa koodissa luodaan 100-alkioinen taulukko ja alustetaan se muuttujan X arvolla.
+
+```
+ARVOSANAT DS 100    ; Tämä varaa taulukolle tilaa 100 muistipaikkaa alkaen osoitteesta ARVOSANAT.
+N EQU 100           ; Tämä luo vakion N, joka on arvoltaan 100 eli taulukon koko.
+X DC 0              ; Muuttujan X varaaminen ja sen alustaminen arvoon 0.
+
+          LOAD R1, X                ; Ladataan rekisteriin R1 muuttujan X arvo.
+          LOAD R2, =0               ; Käytetään rekisteriä R2 indeksirekisterinä alkaen indeksistä 0.
+
+Alusta    STORE R1, ARVOSANAT(R2)   ; Talletetaan rekisterin R1 arvo osoitteeseen ARVOSANAT + R2
+          ADD R2, =1                ; Lisätään indeksirekisterin R2 arvoa yhdellä
+          COMP R2, =N               ; Verrataan R2 arvoa lukuun 100 (vakio N) eli taulukon kokoon.
+          JLES Alusta               ; Jos edellisen rivin vertailun tulos oli pienempi, eli
+                                    ;   että pätee R2 < N, hypätään kohtaan Alusta.
+
+          SVC SP, =HALT             ; Lopetetaan ohjelma.
+```
+
+Ohjelmassa alustetaan taulukko ARVOSANAT muuttujan X arvolla. Huomatkaa, että indeksointi menee kuten vaikkapa Javan int[] -taulukoissa, eli taulukon ensimmäinen alkio on indeksissä 0 ja viimeinen indeksissä N-1. Kun N = 100, indeksit ovat 0,1,2,...,99.
 
 
 ### Laskutoimitukset
