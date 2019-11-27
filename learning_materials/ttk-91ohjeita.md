@@ -204,30 +204,6 @@ STORE R1, PERSON(R2)    ; Tämä käsky tallettaa (STORE) rekisterin R1 sisäll�
 
 ```
 
-#### Taulukon alustaminen
-
-Havainnollistetaan indeksirekisterin käyttöä taulukon alustaminseen. Seuraavassa koodissa luodaan 100-alkioinen taulukko ja alustetaan se muuttujan X arvolla.
-
-```
-ARVOSANAT DS 100    ; Tämä varaa taulukolle tilaa 100 muistipaikkaa alkaen osoitteesta ARVOSANAT.
-N EQU 100           ; Tämä luo vakion N, joka on arvoltaan 100 eli taulukon koko.
-X DC 0              ; Muuttujan X varaaminen ja sen alustaminen arvoon 0.
-
-          LOAD R1, X                ; Ladataan rekisteriin R1 muuttujan X arvo.
-          LOAD R2, =0               ; Käytetään rekisteriä R2 indeksirekisterinä alkaen indeksistä 0.
-
-Alusta    STORE R1, ARVOSANAT(R2)   ; Talletetaan rekisterin R1 arvo osoitteeseen ARVOSANAT + R2
-          ADD R2, =1                ; Lisätään indeksirekisterin R2 arvoa yhdellä
-          COMP R2, =N               ; Verrataan R2 arvoa lukuun 100 (vakio N) eli taulukon kokoon.
-          JLES Alusta               ; Jos edellisen rivin vertailun tulos oli pienempi, eli
-                                    ;   että pätee R2 < N, hypätään kohtaan Alusta.
-
-          SVC SP, =HALT             ; Lopetetaan ohjelma.
-```
-
-Ohjelmassa alustetaan taulukko ARVOSANAT muuttujan X arvolla. Huomatkaa, että indeksointi menee kuten vaikkapa Javan int[] -taulukoissa, eli taulukon ensimmäinen alkio on indeksissä 0 ja viimeinen indeksissä N-1. Kun N = 100, indeksit ovat 0,1,2,...,99.
-
-
 ### Laskutoimitukset
 
 TTK-91:ssä on käytössä seuraavat laskutoimitukset.
@@ -411,7 +387,35 @@ JGRE suurempi   ; Jump if Greater. Jos vertailun tulos oli se, että R1:n arvo o
 
 ### Lukujen lisääminen taulukkoon ja taulukon lukeminen
 
-Tässä esimerkissä käyttäjältä pyydetään 10 positiivista lukua jotka talletetaan taulukkoon. Jos käyttäjä syöttää ei-positiivisen luvun, tai kun kaikki luvut on saatu, ohjelma tulostaa annetut luvut viimeisenä annetusta alkaen ja ohjelma lopetetaan. Jos yhtään positiivista lukua ei ole annettu, mitään ei tulosteta ja ohjelma lopetetaan.
+Taulukot ovat ohjelmoinnissa tärkeä tietorakenne. Seuraavaksi esitetään miten taulukon alkioiden arvot saa asetettua tiettyyn arvoon eli taulukon alustaminen ja sen jälkeen käyttäjältä kysyttävien lukujen lisääminen taulukkoon.
+
+#### Taulukon alustaminen
+
+Havainnollistetaan indeksirekisterin käyttöä taulukon alustamiseen. Seuraavassa koodissa luodaan 100-alkioinen taulukko ja alustetaan se muuttujan X arvolla.
+
+```
+ARVOSANAT DS 100    ; Tämä varaa taulukolle tilaa 100 muistipaikkaa alkaen osoitteesta ARVOSANAT.
+N EQU 100           ; Tämä luo vakion N, joka on arvoltaan 100 eli taulukon koko.
+X DC 0              ; Muuttujan X varaaminen ja sen alustaminen arvoon 0.
+
+          LOAD R1, =0               ; Käytetään rekisteriä R1 indeksirekisterinä alkaen indeksistä 0.
+          LOAD R2, X                ; Ladataan rekisteriin R2 muuttujan X arvo.
+
+Alusta    STORE R2, ARVOSANAT(R1)   ; Talletetaan rekisterin R2 arvo osoitteeseen ARVOSANAT + R1
+          ADD R1, =1                ; Lisätään indeksirekisterin R1 arvoa yhdellä
+          COMP R1, =N               ; Verrataan R1 arvoa lukuun 100 (vakio N) eli taulukon kokoon.
+          JLES Alusta               ; Jos edellisen rivin vertailun tulos oli pienempi, eli
+                                    ;   että pätee R1 < N, hypätään kohtaan Alusta.
+
+          SVC SP, =HALT             ; Lopetetaan ohjelma.
+```
+
+Ohjelmassa alustetaan taulukko ARVOSANAT muuttujan X arvolla. Huomatkaa, että indeksointi menee kuten vaikkapa Javan int[] -taulukoissa, eli taulukon ensimmäinen alkio on indeksissä 0 ja viimeinen indeksissä N-1. Kun N = 100, indeksit ovat 0,1,2,...,99. Lisäksi kannattaa muistaa, että STORE -käskyllä voi tallettaa vain rekisterissä olevia arvoja johonkin muistipaikkaan. Jos siis muuttujan X arvo halutaan tallettaa muistiosoitteeseen ARVOSANAT+R2, on ensin muuttujan X arvo ladattava (`LOAD R2, X`) johonkin rekisteriin ja sen jälkeen konekäskyllä `STORE R2, ARVOSANAT(R1)` saa sen arvon sitten talletettua haluttuun muistiosoitteeseen.
+
+
+#### Lukujen kysyminen käyttäjältä ja tallettaminen taulukkoon
+
+Tässä esimerkissä käyttäjältä pyydetään 10 positiivista lukua jotka talletetaan taulukkoon LUVUT. Jos käyttäjä syöttää ei-positiivisen luvun, tai kun kaikki luvut on saatu, ohjelma tulostaa annetut luvut viimeisenä annetusta alkaen ja ohjelma lopetetaan. Jos yhtään positiivista lukua ei ole annettu, mitään ei tulosteta ja ohjelma lopetetaan.
 
 ```
           LUVUT DS 10           ; Varataan tilaa taulukolle LUVUT
