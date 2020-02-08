@@ -419,7 +419,7 @@ Ja tässä sama koodi kommentein varustettuna:
 ```
 jump ALKU
 
-; Alustetaan hyppytaulut. Yllä on hypätty jo näiden yli, joten ne voidaan alustaa tässä.
+; Alustetaan taulukko HYPPYTAULU. Yllä on hypätty jo näiden yli, joten ne voidaan alustaa tässä.
  
 HYPPYTAULU jump CASE0
            jump CASE1  ; Näppärää: aiempi rivi määrittyy sanan HYPPYTAULU mukaan,
