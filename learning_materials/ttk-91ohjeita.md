@@ -427,9 +427,9 @@ HYPPYTAULU jump CASE0
 
 
 ; Luetaan näppäimistöltä luku. 
-; Jos luku on välillä 0..2, hypätään luvun osoittamaan hyppytauluun.
-; Jos luku on suurempi kuin 2, hypätään ALKUun.
 ; Negatiivisella luvulla hypätään lopetukseen.
+; Otetaan jakojäännös, jotta saadaan luvun parillisuus selville
+; Jos jakojäännös 0, hypätään kohtaan HYPPYTAULU + 0. Jos 1, hypätään HYPPYTAULU + 1.
 
 ALKU       load r1, =kbd   ; Luetaan luku näppäimistöltä.
            jneg r1, LOPPU  ; Ei hyväksytä negatiivisia arvoja: jos r1 < 0, hypätään LOPPUuun.
