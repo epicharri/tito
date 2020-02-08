@@ -385,6 +385,76 @@ JGRE suurempi   ; Jump if Greater. Jos vertailun tulos oli se, että R1:n arvo o
 > Muista, että näitä suuruusvertailuhyppykäskyjä käytettäessä on aina ensin tehtävä vertailu `COMP` -käskyllä. Esimerkkejä: `COMP R1, X` tai `COMP R1, =10`.
 
 
+### Hyppytaulujen käyttö ehdollisia hyppyjä varten
+
+Joissakin tapauksissa on kätevä käyttää _hyppytauluja_. Hyppytaulu on taulukko, joka sisältää hyppykäskyjä johonkin kohtaan koodia. Sen sijaan, että käytettäisiin vertailuoperaattoria kunkin vaikkapa syötteenä saadun arvon mukaan hyppäämiseen, voidaan hypätä suoraan syötteen perusteella hyppytaulun kohtaan, jossa on hyppykäsky haluttuun kohtaan koodia. Usein on tarpeen toki selvittää, onko annettu syöte oikeellinen. Alla olevassa esimerkissä hypätään parillisuuden perustella oikeaan kohtaan koodia, kunhan syöte on kelvollinen. Tässä syötteeksi hyväksytään vain ei-negatiivinen luku.
+
+Tässä ensin esimerkin koodi ilman kommentteja. Mieti mitä eri kohdissa tapahtuu. Tämän koodilohkon alla on vielä sama koodi kommentein varustettuna.
+
+```
+jump ALKU
+ 
+HYPPYTAULU jump CASE0
+           jump CASE1
+
+ALKU       load r1, =kbd
+           jneg r1, LOPPU
+           mod r1, =2
+           jump HYPPYTAULU(r1)
+
+LOPPU      svc sp, =halt
+
+CASE0      add r1, =10
+           out r1, =crt
+           jump LOPPU
+
+CASE1      mul r1, =10
+           out r1, =crt
+           jump LOPPU
+
+```
+
+Ja tässä sama koodi kommentein varustettuna:
+
+```
+jump ALKU
+
+; Alustetaan hyppytaulut. Yllä on hypätty jo näiden yli, joten ne voidaan alustaa tässä.
+ 
+HYPPYTAULU jump CASE0
+           jump CASE1  ; Näppärää: aiempi rivi määrittyy sanan HYPPYTAULU mukaan,
+                       ;   joten seuraava rivi on osoitteessa HYPPYTAULU + 1.
+
+
+; Luetaan näppäimistöltä luku. 
+; Jos luku on välillä 0..2, hypätään luvun osoittamaan hyppytauluun.
+; Jos luku on suurempi kuin 2, hypätään ALKUun.
+; Negatiivisella luvulla hypätään lopetukseen.
+
+ALKU       load r1, =kbd   ; Luetaan luku näppäimistöltä.
+           jneg r1, LOPPU  ; Ei hyväksytä negatiivisia arvoja: jos r1 < 0, hypätään LOPPUuun.
+           mod r1, =2      ; r1:n arvoksi jakojäännös luvulla 2 jaettaessa. r1 on nyt 0 tai 1.
+           jump HYPPYTAULU(r1)  ; Hypätään osoitteeseen HYPPYTAULU + r1
+
+; Tässä välissä voi olla muuta koodia.
+
+LOPPU      svc sp, =halt
+
+; Alla olevat koodit ovat täällä lopussa, joten niihin pääsee vain hyppäämällä.
+
+CASE0      add r1, =10
+           out r1, =crt
+           jump LOPPU
+
+CASE1      mul r1, =10
+           out r1, =crt
+           jump LOPPU
+
+```
+
+Hyppytaulun edut korostuvat, jos ehtoja olisi enemmän. Jos hyväksytty rekisterin r1 arvo olisi vaikkapa välillä 0..999, riittää tarkistaa, ettei luku ole negatiivinen eikä lukua 999 suurempi, ja sen jälkeen vain hyppää `JUMP HYPPYTAULU(r1)`. Ilman hyppytaulun hyödyntämistä olisi tehtävä tuhat COMP -vertailua ja JEQU -hyppyä!
+
+
 ### Lukujen lisääminen taulukkoon ja taulukon lukeminen
 
 Taulukot ovat ohjelmoinnissa tärkeä tietorakenne. Seuraavaksi esitetään miten taulukon alkioiden arvot saa asetettua tiettyyn arvoon eli taulukon alustaminen ja sen jälkeen käyttäjältä kysyttävien lukujen lisääminen taulukkoon.
