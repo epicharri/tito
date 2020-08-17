@@ -664,7 +664,15 @@ ALUSTA pushr sp
   ;   taulukon alkuosoitetta, kokoa ja arvoa jolla halutaan taulukko alustaa.
   ;   Nyt esimerkiksi taulukon osoitteen saa ladattua käskyllä 
   ;   LOAD R1, aliTaulukko(fp), koon käskyllä LOAD R2, aliKoko(fp) ja arvon
-  ;   käskyllä LOAD R3, aliArvo(fp). 
+  ;   käskyllä LOAD R3, aliArvo(fp). Tämän jälkeen taulukon indeksiin 0
+  ;   saa talletettua rekisterin R3 arvon konekäskyllä STORE R3, 0(R1).
+  ;   Jotta saat talletettua muihinkin indekseihin, laske ensin indeksi
+  ;   johonkin vapaaseen rekisteriin (esim. R1), lisää siihen taulukon 
+  ;   alkuosoite konekäskyllä ADD R1, aliTaulukko(fp) ja talleta halutun 
+  ;   rekisterin (tässä R3) arvo sitten konekäskyllä STORE R3, 0(R1).
+  ;   (Tätä voi optimoida suoritustehon parantamiseksi pitämällä
+  ;   alkuosoitetta jossakin rekisterissä tallessa.)
+  ;   
 popr sp
 exit sp, =3
 ```
