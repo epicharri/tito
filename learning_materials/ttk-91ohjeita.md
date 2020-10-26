@@ -78,7 +78,7 @@ Kun kokonaislukua käytetään konekäskyn yhteydessä, on käytössä 16 bitti�
 
 Tässä on taulukko konekäskyn binääriesityksestä, josta voitte havaita, että konekäskyn yhteydessä on vain 16 bittiä käytössä kokonaisluvun ilmaisua varten.
 
-Konekäskyn rakenteesta on lisätietoa [täällä.](https://www.cs.helsinki.fi/group/titokone/ttk91_ref_fi.html). Alla oleva taulukko on suoraan kyseisestä lähteestä.
+Konekäskyn rakenteesta on lisätietoa [täällä](https://www.cs.helsinki.fi/group/titokone/ttk91_ref_fi.html). Alla oleva taulukko on suoraan kyseisestä lähteestä.
 
 ```
       8 bittiä       3b    2b    3b              16 bittiä
@@ -239,6 +239,65 @@ STORE R1, A ; Talletetaan rekisterin R1 arvo muuttujan A arvoksi
 ```
 
 Mikä ihmeen `STORE`? No, sillä talletetaan rekisterin arvo muuttujan arvoksi. Täsmällisesti ilmaistuna konekäskyllä `STORE R1, A` talletetaan rekisterin R1 arvo muistipaikkaan A.
+
+### Bittitason loogiset operaatiot ja bittien siirto-operaatiot
+
+Ttk-91:ssä on käytössä bittimanipulointiin bittitason loogiset operaatiot AND, OR, XOR ja NOT sekä bittien siirto-operaatiot SHL, SHR ja SHRA. Bittimanipulointia käytetään esimerkiksi osan biteistä eristämiseksi kokonaisluvusta, salausmenetelmissä ja tiedon eheyden varmentamisessa.
+
+Tarkastellaan näistä käskyistä tässä toistaiseksi vain AND-käskyä.
+
+#### AND
+
+Operaatio AND suorittaa bittitason loogisen JA -toiminnon. Logiikassa a JA b on tosi ainoastaan silloin, kun a ja b ovat tosia, eli sekä a että b ovat tosia. Biteillä ilmaisten:
+
+1 JA 1 = 1
+
+1 JA 0 = 0
+
+0 JA 1 = 0
+
+0 JA 0 = 0
+
+
+##### AND korkean tason kielessä (Java)
+
+Ennen kuin näytän, miten ttk-91:ssä käytetään AND-operaatiota, tarkastellaan miten sitä käytetään korkean tason kielessä.
+
+Esimerkiksi Java-kielessä bittitason AND tehdään käyttämällä & -merkkiä. Esimerkki:
+
+```
+int anna = 0b11101110;
+int mask = 0b00111000;
+int b = anna & mask;
+// Nyt b = 0b00101000;
+```
+
+Esimerkissä AND-operaation avulla saatiin eristettyä muuttujan `anna` arvosta ne bitit, joissa kohdissa muuttujan `mask` arvossa on bitit ykkösiä. Siis ne bitit säilyivät alkuperäisinä ja muut nollautuivat:
+
+```
+    11101110
+AND 00111000
+============
+    00101000
+```
+
+AND-operaation ymmärtämistä ja maskin käyttöä tarvitset muun muassa tietoliikenteen sovelluksissa (aliverkon peite eli subnet mask). Sen avulla saa myös vaikkapa 32-bittisestä konekäskystä eristettyä osan tietoa. 
+
+##### AND-operaatiota käytetään seuraavasti ttk-91:ssä.
+
+```
+luku DC 327175712	 ; Alla luku binäärilukuna:
+; 0001 0011 1000 0000 0100 1110 0010 0000
+; Välilyönnit on lisätty helpottamaan luvun lukemista.
+maski DC 65535 ; 0000 0000 0000 0000 1111 1111 1111 1111
+
+LOAD R1, luku     
+AND R1, maski      
+
+; Lopputuloksena R1:ssä on nyt binääriluku 0000 0000 0000 0000 0100 1110 0010 0000.
+```
+
+Tuo esimerkin luku 327175712 on erään ttk-91-kielen 32-bittisen konekäskyn numeerinen esitysmuoto. Tuolla AND-operaatiolla saatiin säilytettyä luvun oikeanpuoleiset 16 bittiä ja nollattua muut bitit. Siis saatiin eristettyä ttk-91-konekäskyn vakio-/osoiteosa!
 
 
 ### IF-THEN-ELSE ja LUUPIT
