@@ -93,6 +93,8 @@ Konekäskyn rakenteesta on lisätietoa [täällä](https://www.cs.helsinki.fi/gr
 
 Konekäskyn binääriesityksessä vasemmalta lukien ensimmäiset 8 bittiä ovat operaatiokoodi, seuraavat 3 bittiä ensimmäinen rekisteri, sitten 2 bittiä osoitustapa, sitten 3 bittiä toinen rekisteri ja lopuksi 16 bittiä muistiosoitetta tai välitöntä operandia varten. Luvun ilmaisu konekäskyn yhteydessä on siis mahdollista käyttämällä 16 bittiä. Koska TTK-91:ssä on sekä negatiiviset että positiiviset kokonaisluvut, pienin luku mitä konekäskyn yhteydessä voidaan käyttää, on - 2^15 = - 32768 ja suurin luku on 2^15 - 1 = 32767.
 
+Konekäskyn voi purkaa osiin ohjelmallisesti käyttämällä bittitason AND ja SHR (Javassa & ja >>>) -operaatioita. Niistä voit lukea lisää [täältä](#bittitason-loogiset-operaatiot-ja-bittien-siirto-operaatiot).
+
 Seuraavassa kappaleessa näytetään miten voidaan käyttää pienempiä lukuja kuin -32768 ja suurempia lukuja kuin 32767.
 
 
