@@ -342,7 +342,19 @@ Kuten esimerkistä näkyy, kun 32-bittisen binääriluvun **0111 0111** 0011 010
 Javalla sama tehdään näin:
 ```
 int heini = 0b0111_0111_0011_0101_1001_0100_0000_0000;
-int bella = hwini >>> 24;
+int siirretty = heini >>> 24;
+```
+
+**Negatiivisten lukujen bittien siirto oikealle Pythonia käytettäessä**
+
+Javaa käytettäessä int-tyypin luvut on talletettu 32-bittisessä Big Endian kahden komplementtimuodossa kuten ttk-91:ssäkin. Pythonissa kokonaisluvut ovat myös Big Endian kahden komplementtimuodossa, mutta lukujen bittimäärää ei ole rajoitettu. Niinpä esimerkiksi luvun -1, jonka 32-bittinen esitysmuoto on 0b1111_1111_1111_1111_1111_1111_1111_1111, bittien siirto oikealle >>> -operaatiolla Javassa aikaansaa sen, että vasemmalta luku täyttyy nollilla. Siis esimerkiksi -1 >>> 1 = 2147483647 eli 32-bittinen binääriluku, jossa vasemmanpuoleisin bitti on 0 ja muut 1. Pythonissa ei ole >>> -operaatiota, vaan vain >> -operaatio, joka täyttää vasemmalta bittejä sen mukaan, mikä on vasemmanpuoleisin bitti alkuperäisessä luvussa. Koska Pythonissa negatiivissa luvuissa tulkitaan olevan mielivaltainen määrä ykkösiä vasemmalla, niin -1 >> 1 on -1. Pythonin >> -operaatio toimii siis saman tyyppisesti kuin alla esitelty SHRA eli artimeettinen oikealle siirto. Pythonissa voi kuitenkin saada tehtyä bittisiirron käyttämällä maskia. Voitte kokeilla pythonissa seuraavaa:
+
+```
+luku = -1
+print(luku >> 1)
+# tämä tulostaa -1
+print(luku & 0xffffffff) >> 1
+# tämä tulostaa luvun 2147483647
 ```
 
 #### SHRA (Shift right arithmetic)
