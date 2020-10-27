@@ -303,6 +303,51 @@ AND R1, maski
 
 Tuo esimerkin luku 327175712 on erään ttk-91-kielen 32-bittisen konekäskyn numeerinen esitysmuoto. Tuolla AND-operaatiolla saatiin säilytettyä luvun oikeanpuoleiset 16 bittiä ja nollattua muut bitit. Siis saatiin eristettyä ttk-91-konekäskyn vakio-/osoiteosa!
 
+### Bittien siirtokäskyt SHL, SHR ja SHRA
+
+Bittien siirtämistä varten ttk-91:sä on käskyt SHL, SHR ja SHRA. Niitä vastaa esimerkiksi Javassa operaatiot <<, >>> ja >>.
+
+#### SHL (Shift left)
+
+Käskyllä SHL saadaan siirrettyä bittejä vasemmalle haluttu määrä. Samalla oikealle tulee nollia siirron määrän verran. Esimerkki valaiskoon asiaa:
+
+```
+Ella DC 25  ; 25 = 0b 0000 0000 0000 0000 0000 0000 0001 1001
+
+LOAD R1, Ella
+SHL R1, =2
+; Seurauksena R1 = 0b 0000 0000 0000 0000 0000 0000 0110 0100
+```
+Javassa sama tehdään näin:
+```
+int ella = 25;
+int bella = ella << 2;
+```
+
+
+#### SHR (Shift right)
+
+Käskyllä SHR saadaan siirrettyä bittejä oikealle haluttu määrä. Vastaavasti vasemmalle puolelle tulee nollia siirron määrän verran. Esimerkki:
+
+```
+Heini DC 2000000000  
+; Luku 2000000000 = 0b 0111 0111 0011 0101 1001 0100 0000 0000 
+
+LOAD R1, Heini
+SHR R1, =24
+; Seurauksena  R1 = 0b 0000 0000 0000 0000 0000 0000 0111 0111
+```
+Kuten esimerkistä näkyy, kun 32-bittisen binääriluvun **0111 0111** 0011 0101 1001 0100 0000 0000 bittejä siirretään oikealle 24 bitin verran, saadaan luku 0000 0000 0000 0000 0000 0000 **0111 0111**. Näin saadaan eristettyä luvun 8 vasemmanpuoleista bittiä ja selvitettyä niiden arvo.
+
+Javalla sama tehdään näin:
+```
+int heini = 0b0111_0111_0011_0101_1001_0100_0000_0000;
+int bella = hwini >>> 24;
+```
+
+#### SHRA (Shift right arithmetic)
+
+Käsky SHRA (Javassa >>) toimii kuten SHR, mutta sen sijaan, että siirrossa vasemmalle jäävät bitit korvataan nollilla, ne korvataan sillä bitillä, joka on vasemmanpuoleisin bitti. Siis nollalla jos vasemmanpuoleisin on 0 ja ykkösellä jos vasemmanpuoleisin on 1. Tällä on merkitystä luvun merkin (+ vai -) säilymisen kannalta.
 
 ### IF-THEN-ELSE ja LUUPIT
 
