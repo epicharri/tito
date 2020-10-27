@@ -258,12 +258,23 @@ Operaatio AND suorittaa bittitason loogisen JA -toiminnon. Logiikassa a JA b on 
 
 0 JA 0 = 0
 
+##### Bittitason AND
+
+Bittitason AND-operaatio toimii siten, että kahden kokonaisluvun binääriesityksen samassa kohdassa olevien bittien kesken suoritetaan yllä kuvatulla tavalla JA eli AND -operaatio. Tässä esimerkki:
+
+```
+    11101110
+AND 00111000
+============
+    00101000
+```
+Esimerkissä AND-operaation avulla saatiin eristettyä ylemmästä luvusta 11**101**110 ne bitit, joiden kohdalla luvussa 00111000 bitit ovat ykkösiä. Siis ykkösten kohdalla olevat bitit säilyivät alkuperäisinä ja muut nollautuivat.
 
 ##### AND korkean tason kielessä (Java)
 
 Ennen kuin näytän, miten ttk-91:ssä käytetään AND-operaatiota, tarkastellaan miten sitä käytetään korkean tason kielessä.
 
-Esimerkiksi Java-kielessä bittitason AND tehdään käyttämällä & -merkkiä. Esimerkki:
+Java-kielessä bittitason AND tehdään käyttämällä & -merkkiä. Esimerkki:
 
 ```
 int anna = 0b11101110;
@@ -272,14 +283,7 @@ int b = anna & mask;
 // Nyt b = 0b00101000;
 ```
 
-Esimerkissä AND-operaation avulla saatiin eristettyä muuttujan `anna` arvosta ne bitit, joissa kohdissa muuttujan `mask` arvossa on bitit ykkösiä. Siis ne bitit säilyivät alkuperäisinä ja muut nollautuivat:
-
-```
-    11101110
-AND 00111000
-============
-    00101000
-```
+Esimerkissä AND-operaation avulla saatiin eristettyä muuttujan `anna` arvosta ne bitit, joiden kohdissa muuttujan `mask` arvossa on bitit ykkösiä.
 
 AND-operaation ymmärtämistä ja maskin käyttöä tarvitset muun muassa tietoliikenteen sovelluksissa (aliverkon peite eli subnet mask). Sen avulla saa myös vaikkapa 32-bittisestä konekäskystä eristettyä osan tietoa. 
 
