@@ -20,7 +20,7 @@ Ladataan nyt luku 2 rekisteriin LOAD -käskyllä:
 
 Pienet ja isot kirjaimet eivät ole merkityksellisiä. Voit siis kirjoittaa koodia vaikka näin `load r1, =2` tai `LoAd R1, =2`.
 
-Käsky tallettaa rekisteriin R1 kokonaisluvun 2. Huomaat että ennen lukua 2 on = -merkki. Se ilmaisee että sitä seuraava arvo on _välitön operandi_. _Operandi_ on tarkoittaa operaation kohdetta. Operaationa tässä on LOAD, ensimmäisenä operandina on R1:n arvo ja toisena operandina luku 2. KAIKKI TTK-91 -kielen operaatiot ovat binäärioperaatioita eli operaatioita joissa on kaksi (siksi binääri) operaation kohdetta eli operandia. Tällainen termistö voi tuntua vieraalta, mutta olet käyttänyt operaatioita ja operandeja alakoulusta lähtien. Esimerkiksi aivan tavallinen laskutoimitus 4 + 7, missä 4 ja 7 ovat operandeja ja + on operaatio.
+Käsky tallettaa rekisteriin R1 kokonaisluvun 2. Huomaat että ennen lukua 2 on = -merkki. Se ilmaisee että sitä seuraava arvo on _välitön operandi_. _Operandi_ tarkoittaa operaation kohdetta. Operaationa tässä on LOAD, ensimmäisenä operandina on R1:n arvo ja toisena operandina luku 2. KAIKKI TTK-91 -kielen operaatiot ovat binäärioperaatioita eli operaatioita joissa on kaksi (siksi binääri) operaation kohdetta eli operandia. Tällainen termistö voi tuntua vieraalta, mutta olet käyttänyt operaatioita ja operandeja alakoulusta lähtien. Esimerkiksi aivan tavallinen laskutoimitus 4 + 7, missä 4 ja 7 ovat operandeja ja + on operaatio.
 
 > Terminologiaa: Käsky on sama kuin operaatio, esimerkiksi LOAD. Konekäsky on koko rimpsu operandeineen ja rekistereineen, tässä tapauksessa LOAD R1, =2.
 
@@ -362,6 +362,31 @@ print(luku & 0xffffffff) >> 1
 #### SHRA (Shift right arithmetic)
 
 Käsky SHRA (Javassa >>) toimii kuten SHR, mutta sen sijaan, että siirrossa vasemmalle jäävät bitit korvataan nollilla, ne korvataan sillä bitillä, joka on vasemmanpuoleisin bitti. Siis nollalla jos vasemmanpuoleisin on 0 ja ykkösellä jos vasemmanpuoleisin on 1. Tällä on merkitystä luvun merkin (+ vai -) säilymisen kannalta.
+
+### NOT
+
+NOT-operaation avulla saadaan vaihdettua luvun bitit siten, että jokaisesta nollasta tulee yksi ja ykkösistä nolla. Esimerkki:
+
+```
+A DC 1       ; 0b 0000 0000 0000 0000 0000 0000 0000 0001
+
+LOAD R1, A
+NOT R1
+; Saadaan R1 = 0b 1111 1111 1111 1111 1111 1111 1111 1110
+```
+
+### OR
+
+OR-operaation (looginen TAI) avulla saadaan esimerkiksi lisättyä binääriluvun nollia sisältäviin kohtiin halutut bitit. Esimerkki:
+
+<pre><code>
+IRA DC 230         ; 0b 0000 0000 0000 0000 0000 0000 <b>1110 0110</b>
+LUKU DC 2147483392 ; 0b 0111 1111 1111 1111 1111 1111 0000 0000
+LOAD R1, LUKU
+OR R1, IRA
+; Saadaan       R1 = 0b 0111 1111 1111 1111 1111 1111 <b>1110 0110</b>
+</code></pre>
+
 
 ### IF-THEN-ELSE ja LUUPIT
 
