@@ -126,12 +126,13 @@ LOAD R1, MILTSI         ; R1:n arvoksi tulee muuttujan MILTSI arvo 1000000.
 
 > Konekäskyn yhteydessä pienin mahdollinen luku on -32768 ja suurin 32767.
 
-> Lukua operaatiolla `IN` luettaessa ja muuttujan tai vakion määrittelyssä pienin mahdollinen luku on -2147483648 ja suurin 2147483647.
+> Lukua operaatiolla `IN` luettaessa ja muuttujan tai muuttujana talletettavan vakion määrittelyssä pienin mahdollinen luku on -2147483648 ja suurin 2147483647. Muuttujana talletettavalla vakiolla tarkoitetaan lukua, joka on aivan kuten muuttuja, mutta ohjelmoijan tulee muistaa, että sen arvoa ei saa muuttaa.
 
-_Pseudokäsky_ ei ole "oikea" konekäsky. Se huomioidaan vain käännösvaiheessa. Esimerkiksi `A DC 0` pseudokäsky varaa käännösvaiheessa muuttujalle A muistiosoitteen ja asettaa sen arvoksi 0. Kääntäjä asettaa _symbolitauluun_ tiedon muuttujan nimestä ja osoitteesta.
+_Pseudokäsky_ ei ole "oikea" konekäsky. Se huomioidaan vain käännösvaiheessa. Esimerkiksi `A DC 0` pseudokäsky varaa käännösvaiheessa muuttujalle A muistiosoitteen ja asettaa muuttujan arvoksi 0. Tällöin _symbolin_ A arvo on sille varattu muistiosoite ja _muuttujan_ A arvo on 0. Kääntäjä asettaa _symbolitauluun_ tiedon muuttujan nimestä ja osoitteesta.
 
 > Muuttujan määrittely ja alustaminen `A DC 0`. Samantapaisesti siis kuten Javassa `int a = 0;`
 > Muuttujan arvoa voidaan muuttaa, vaikka tuo DC käsky on lyhenne sanoista data constant. Yleensä constant on vakio jota ei voi muuttaa.
+> Muuttujaa voidaan kuitenkin käyttää halutessaan kuin vakiota: silloin ohjelmoijan on muistettava, että kyse on vakiosta, jota ei saa muuttaa  STORE -käskyllä.
 
 ### Vakiot
 
@@ -146,12 +147,12 @@ Kuten DC:n, myös EQU:n avulla määritellyn vakion nimi ja arvo talletetaan sym
 
 #### Vakioiden käyttäminen
 
-Esimerkki vakioiden käyttämisestä ja vertailua muuttujan käyttämiseen.
+Esimerkki EQU-vakioiden käyttämisestä ja vertailua muuttujan tai muuttujana alustetun vakion käyttämiseen.
 
 
 ```
 
-MILJARDI DC 1000000000
+MILJARDI DC 1000000000    ; Tämä on aivan tavallinen muuttuja, jota käytetään tässä kuin vakiota.
 suurinVakio EQU 32767
 pieninVakio EQU -32768
 
@@ -170,7 +171,7 @@ SVC SP, =HALT
 
 ```
 
-Tästä kannattaa huomata erityisesti, että pseudokäskyllä EQU voi asettaa vakiolle arvoja vain välillä -32768..32767. Sallitut arvot ovat siis samat kuin mitä lukuja osoite/vakio-osaan voi muutenkin kirjoittaa. Tämän välin ulkopuolisia lukuja voi tallettaa muuttujien arvoiksi ja käyttää niitä, kuten tässä esimerkissä tehtiin muuttujalle MILJARDI. 
+Tästä kannattaa huomata erityisesti, että pseudokäskyllä EQU voi asettaa vakiolle arvoja vain välillä -32768..32767. Sallitut arvot ovat siis samat kuin mitä lukuja osoite/vakio-osaan voi muutenkin kirjoittaa. Tämän välin ulkopuolisia lukuja voi tallettaa muuttujien arvoiksi ja käyttää niitä vakioina, kuten tässä esimerkissä tehtiin muuttujalle MILJARDI. Tällöin ohjelmoijan on muistettava, ettei vahingossa muuta muuttujana talletetun vakion arvoa.
 
 
 ### Tietueet ja taulukot
