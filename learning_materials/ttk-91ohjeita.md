@@ -62,7 +62,7 @@ Tämän konekäskyn suorituksen jälkeen rekisterin R1 arvo on näpppäimistölt
 
 ### Käytettävissä 32 bittiä luvun ilmaisuun
 
-Kun ohjelma lukee käyttäjän syötteen operaatiolla `IN` tai kun määritellään muuttujan tai vakion arvo, on käytettävissä 32 bittiä luvun ilmaisuun. Koska käytössä on myös negatiiviset luvut, lukualue tällöin seuraava:
+Kun ohjelma lukee käyttäjän syötteen operaatiolla `IN` tai kun määritellään muuttujan tai muuttujana tallennettavan vakion arvo, on käytettävissä 32 bittiä luvun ilmaisuun. Koska käytössä on myös negatiiviset luvut, lukualue tällöin seuraava:
 
 * Pienin kokonaisluku on - 2^31 = - 2147483648
 * Suurin kokonaisluku on 2^31 - 1 = 2147483647
