@@ -545,7 +545,7 @@ jump ALKU
 HYPPYTAULU jump CASE0
            jump CASE1
 
-ALKU       load r1, =kbd
+ALKU       in r1, =kbd
            jneg r1, LOPPU
            mod r1, =2
            jump HYPPYTAULU(r1)
@@ -579,7 +579,7 @@ HYPPYTAULU jump CASE0
 ; Otetaan jakojäännös, jotta saadaan luvun parillisuus selville
 ; Jos jakojäännös 0, hypätään kohtaan HYPPYTAULU + 0. Jos 1, hypätään HYPPYTAULU + 1.
 
-ALKU       load r1, =kbd   ; Luetaan luku näppäimistöltä.
+ALKU       in r1, =kbd   ; Luetaan luku näppäimistöltä.
            jneg r1, LOPPU  ; Ei hyväksytä negatiivisia arvoja: jos r1 < 0, hypätään LOPPUuun.
            mod r1, =2      ; r1:n arvoksi jakojäännös luvulla 2 jaettaessa. r1 on nyt 0 tai 1.
            jump HYPPYTAULU(r1)  ; Hypätään osoitteeseen HYPPYTAULU + r1
